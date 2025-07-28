@@ -83,6 +83,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setPatient(null);
     } catch (error) {
       console.error('Logout failed:', error);
+      // Even if API call fails, clear local state
+      setPatient(null);
     }
   };
 

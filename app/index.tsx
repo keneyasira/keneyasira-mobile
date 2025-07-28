@@ -1,13 +1,29 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useSegments } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function SplashScreen() {
   const router = useRouter();
+  const segments = useSegments();
   const { patient, isLoading, loginWithMagicLink } = useAuth();
 
+  // Navigation effect to handle auth state changes
+  useEffect(() => {
+    if (isLoading) return;
+
+    const inAuthGroup = segments[0] === 'auth';
+    const inTabsGroup = segments[0] === '(tabs)';
+
+    if (patient && !inTabsGroup) {
+      // User is authenticated but not in tabs, redirect to tabs
+      router.replace('/(tabs)/search');
+    } else if (!patient && !inAuthGroup) {
+      // User is not authenticated and not in auth, redirect to login
+      router.replace('/auth/login');
+    }
+  }, [patient, isLoading, segments]);
   useEffect(() => {
     // Handle magic link deep linking
     const handleDeepLink = async (url: string) => {
@@ -37,18 +53,10 @@ export default function SplashScreen() {
       handleDeepLink(url);
     });
 
-    if (!isLoading) {
-      if (patient) {
-        router.replace('/(tabs)/search');
-      } else {
-        router.replace('/auth/login');
-      }
-    }
-
     return () => {
       subscription?.remove();
     };
-  }, [patient, isLoading]);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

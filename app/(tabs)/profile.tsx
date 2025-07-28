@@ -10,9 +10,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { User, Mail, Phone, MapPin, Calendar, CreditCard as Edit3, Save, LogOut } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const { patient, logout, updatePatient } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -42,7 +44,10 @@ export default function ProfileScreen() {
         {
           text: 'Logout',
           style: 'destructive',
-          onPress: logout,
+          onPress: async () => {
+            await logout();
+            router.replace('/auth/login');
+          },
         },
       ]
     );
