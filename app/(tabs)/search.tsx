@@ -61,7 +61,7 @@ export default function SearchScreen() {
       <View style={styles.cardContent}>
         <Image
           source={{
-            uri: doctor.profileImage || 'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=200',
+            uri: 'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=200',
           }}
           style={styles.doctorImage}
         />
@@ -69,21 +69,19 @@ export default function SearchScreen() {
           <Text style={styles.doctorName}>
             Dr. {doctor.user.firstName} {doctor.user.lastName}
           </Text>
-          <Text style={styles.specialty}>{doctor.specialt}</Text>
+          <Text style={styles.specialty}>
+            {doctor.specialties.map(s => s.name).join(', ')}
+          </Text>
           <View style={styles.locationRow}>
             <MapPin size={14} color="#6B7280" />
-            <Text style={styles.location}>{doctor.city}</Text>
+            <Text style={styles.location}>Location not available</Text>
           </View>
-          {doctor.rating && (
-            <View style={styles.ratingRow}>
-              <Star size={14} color="#F59E0B" />
-              <Text style={styles.rating}>{doctor.rating.toFixed(1)}</Text>
-            </View>
-          )}
+          <View style={styles.ratingRow}>
+            <Star size={14} color="#F59E0B" />
+            <Text style={styles.rating}>Not rated</Text>
+          </View>
         </View>
-        {doctor.consultationFee && (
-          <Text style={styles.fee}>${doctor.consultationFee}</Text>
-        )}
+        <Text style={styles.fee}>Contact for pricing</Text>
       </View>
     </TouchableOpacity>
   );
