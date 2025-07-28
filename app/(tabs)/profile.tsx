@@ -200,7 +200,7 @@ export default function ProfileScreen() {
                 <Calendar size={18} color="#6B7280" />
                 <TextInput
                   style={[styles.input, styles.inputDisabled]}
-                  value={formatDate(patient.dateOfBirth)}
+                  value={formatDate(patient.user.birthDate)}
                   editable={false}
                   placeholder="Date of birth"
                 />
