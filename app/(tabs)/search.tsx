@@ -41,10 +41,10 @@ export default function SearchScreen() {
       if (searchType === 'doctors') {
         const results = await apiService.searchPracticians({ name_search: searchQuery });
         console.log('RESULTS', results);
-        setDoctors(results);
+        setDoctors(results.data);
       } else {
         const results = await apiService.searchEstablishments({ name_search: searchQuery });
-        setEstablishments(results);
+        setEstablishments(results.data);
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to search. Please try again.');
