@@ -46,20 +46,25 @@ export interface UserModel {
 
 export interface Practician {
   id: string;
-  firstName: string;
-  lastName: string;
-  specialty: string;
-  email: string;
-  phone?: string;
-  address?: string;
-  city?: string;
-  experience?: number;
-  rating?: number;
-  consultationFee?: number;
-  profileImage?: string;
-  bio?: string;
-  createdAt: string;
-  updatedAt: string;
+  user: {
+    createdBy?: null;
+    email: string;
+    firstName: string;
+    id: string;
+    lastName: string;
+    phone:string;
+    updatedBy: null;
+    deletedAt: null;
+    deletedBy: null;
+    createdAt?: string;
+    updatedAt?: string;
+  };
+  createdBy?: string
+  updatedBy?: string
+  deletedBy?: string
+  createdAt?: string
+  deletedAt?: string
+  updatedAt?: string
 }
 
 export interface Establishment {
