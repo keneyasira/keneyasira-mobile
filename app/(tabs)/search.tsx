@@ -67,9 +67,9 @@ export default function SearchScreen() {
         />
         <View style={styles.doctorInfo}>
           <Text style={styles.doctorName}>
-            Dr. {doctor.firstName} {doctor.lastName}
+            Dr. {doctor.user.firstName} {doctor.user.lastName}
           </Text>
-          <Text style={styles.specialty}>{doctor.specialty}</Text>
+          <Text style={styles.specialty}>{doctor.specialt}</Text>
           <View style={styles.locationRow}>
             <MapPin size={14} color="#6B7280" />
             <Text style={styles.location}>{doctor.city}</Text>
