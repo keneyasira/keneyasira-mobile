@@ -221,9 +221,10 @@ const styles = StyleSheet.create({
   },
   otpContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     marginBottom: 40,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
+    gap: 12,
   },
   otpInput: {
     width: 48,
