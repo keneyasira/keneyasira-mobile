@@ -147,7 +147,6 @@ export default function BookAppointmentScreen() {
       if (type === 'doctor' && timeSlot.establishment) {
         return `Would you like to book an appointment ${timeText} at ${timeSlot.establishment.name}?`;
       } else if (type === 'establishment' && timeSlot.practician) {
-        console.log('Practician data:', timeSlot.practician);
         return `Would you like to book an appointment ${timeText} with Dr. ${timeSlot.practician.user.firstName} ${timeSlot.practician.user.lastName}?`;
       }
       return `Would you like to book an appointment ${timeText}?`;
