@@ -69,7 +69,7 @@ export default function SearchScreen() {
     try {
       const searchFilters = {
         ...(searchQuery && { name_search: searchQuery }),
-        ...(selectedSpecialty && { specialty: selectedSpecialty.name }),
+        ...(selectedSpecialty && { specialty: selectedSpecialty.id }),
       };
 
       // Search both doctors and establishments in parallel
