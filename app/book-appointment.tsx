@@ -259,10 +259,10 @@ export default function BookAppointmentScreen() {
               </View>
               
               <View style={styles.timeSlotsContainer}>
-                {day.timeSlots.filter(slot => slot.isAvailable).length > 0 ? (
+                {day.timeSlots.filter(slot => slot.available).length > 0 ? (
                   <View style={styles.slotsGrid}>
                     {day.timeSlots
-                      .filter(slot => slot.isAvailable)
+                      .filter(slot => slot.available)
                       .map((slot) => (
                         <TouchableOpacity
                           key={slot.id}
