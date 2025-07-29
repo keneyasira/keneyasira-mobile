@@ -46,6 +46,7 @@ export default function EstablishmentDetailScreen() {
     try {
       setLoading(true);
       const response = await apiService.getEstablishmentById(id);
+      console.log(response);
       setEstablishment(response.data);
     } catch (error) {
       Alert.alert('Error', 'Failed to load establishment details');
