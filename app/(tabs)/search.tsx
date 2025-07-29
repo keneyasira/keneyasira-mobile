@@ -102,14 +102,15 @@ export default function SearchScreen() {
             <Text style={styles.location}>{establishment.city}</Text>
           </View>
           <Text style={styles.specialties}>
-            {establishment.specialties.join(', ')}
+            {establishment.specialties.map(s => s.name).join(', ')}
           </Text>
-          {establishment.rating && (
-            <View style={styles.ratingRow}>
-              <Star size={14} color="#F59E0B" />
-              <Text style={styles.rating}>{establishment.rating.toFixed(1)}</Text>
-            </View>
-          )}
+          <View style={styles.ratingRow}>
+            <Star size={14} color="#F59E0B" />
+            <Text style={styles.rating}>Not rated</Text>
+          </View>
+          <Text style={styles.establishmentType}>
+            {establishment.type.name} • {establishment.affiliation.name}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -344,5 +345,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     marginBottom: 4,
+  },
+  establishmentType: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    fontStyle: 'italic',
   },
 });
