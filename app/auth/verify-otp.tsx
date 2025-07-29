@@ -16,6 +16,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { apiService } from '@/services/api';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 export default function VerifyOTPScreen() {
   const { t } = useTranslation();
@@ -31,6 +33,7 @@ export default function VerifyOTPScreen() {
   const [resendLoading, setResendLoading] = useState(false);
   const [countdown, setCountdown] = useState(60);
   
+  const { alertState, showAlert, hideAlert } = useCustomAlert();
   const inputRefs = useRef<TextInput[]>([]);
 
   useEffect(() => {
@@ -60,7 +63,11 @@ export default function VerifyOTPScreen() {
   const handleVerifyOTP = async () => {
     const otpString = otp.join('');
     if (otpString.length !== 6) {
-      Alert.alert(t('common.error'), t('auth.otpRequired'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.otpRequired'),
+        type: 'error',
+      });
       return;
     }
 
@@ -72,7 +79,11 @@ export default function VerifyOTPScreen() {
       await loginWithOTP(phone, otpString);
       router.replace('/(tabs)/search');
     } catch (error) {
-      Alert.alert(t('common.error'), t('auth.invalidOTP'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.invalidOTP'),
+        type: 'error',
+      });
       // Clear OTP inputs
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
@@ -88,9 +99,17 @@ export default function VerifyOTPScreen() {
       setCountdown(60);
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
-      Alert.alert(t('common.success'), t('auth.otpSentSuccess'));
+      showAlert({
+        title: t('common.success'),
+        message: t('auth.otpSentSuccess'),
+        type: 'success',
+      });
     } catch (error) {
-      Alert.alert(t('common.error'), t('auth.otpSendFailed'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.otpSendFailed'),
+        type: 'error',
+      });
     } finally {
       setResendLoading(false);
     }
@@ -177,6 +196,15 @@ export default function VerifyOTPScreen() {
           </View>
         </View>
       </KeyboardAvoidingView>
+      
+      <CustomAlert
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        type={alertState.type}
+        buttons={alertState.buttons}
+        onDismiss={hideAlert}
+      />
     </SafeAreaView>
   );
 }

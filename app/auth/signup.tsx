@@ -16,6 +16,8 @@ import { User, Mail, Phone, Calendar, ArrowRight, ArrowLeft } from 'lucide-react
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 export default function SignupScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -27,48 +29,81 @@ export default function SignupScreen() {
     birthDate: '',
   });
   const [loading, setLoading] = useState(false);
+  const { alertState, showAlert, hideAlert } = useCustomAlert();
 
   const validateForm = () => {
     if (!formData.firstName.trim()) {
-      Alert.alert(t('common.error'), t('auth.firstNameRequired'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.firstNameRequired'),
+        type: 'error',
+      });
       return false;
     }
 
     if (!formData.lastName.trim()) {
-      Alert.alert(t('common.error'), t('auth.lastNameRequired'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.lastNameRequired'),
+        type: 'error',
+      });
       return false;
     }
 
     if (!formData.email.trim()) {
-      Alert.alert(t('common.error'), t('auth.emailRequired'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.emailRequired'),
+        type: 'error',
+      });
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      Alert.alert(t('common.error'), t('auth.invalidEmail'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.invalidEmail'),
+        type: 'error',
+      });
       return false;
     }
 
     if (!formData.phone.trim()) {
-      Alert.alert(t('common.error'), t('auth.phoneRequired'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.phoneRequired'),
+        type: 'error',
+      });
       return false;
     }
 
     const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
     if (!phoneRegex.test(formData.phone)) {
-      Alert.alert(t('common.error'), t('auth.invalidPhone'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.invalidPhone'),
+        type: 'error',
+      });
       return false;
     }
 
     if (!formData.birthDate.trim()) {
-      Alert.alert(t('common.error'), t('auth.birthDateRequired'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.birthDateRequired'),
+        type: 'error',
+      });
       return false;
     }
 
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(formData.birthDate)) {
-      Alert.alert(t('common.error'), t('auth.invalidBirthDate'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.invalidBirthDate'),
+        type: 'error',
+      });
       return false;
     }
 
@@ -92,7 +127,11 @@ export default function SignupScreen() {
       router.push(`/auth/verify-otp?phone=${encodeURIComponent(formData.phone)}&signup=true`);
     } catch (error) {
       console.error('Signup error:', error);
-      Alert.alert(t('common.error'), t('auth.signupFailed'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.signupFailed'),
+        type: 'error',
+      });
     } finally {
       setLoading(false);
     }
@@ -224,6 +263,15 @@ export default function SignupScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      
+      <CustomAlert
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        type={alertState.type}
+        buttons={alertState.buttons}
+        onDismiss={hideAlert}
+      />
     </SafeAreaView>
   );
 }

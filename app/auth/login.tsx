@@ -15,6 +15,8 @@ import { Phone, ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -22,16 +24,25 @@ export default function LoginScreen() {
   const { requestOTP } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
+  const { alertState, showAlert, hideAlert } = useCustomAlert();
 
   const validateInput = () => {
     if (!phoneNumber.trim()) {
-      Alert.alert(t('common.error'), t('auth.phoneRequired'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.phoneRequired'),
+        type: 'error',
+      });
       return false;
     }
 
     const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
     if (!phoneRegex.test(phoneNumber)) {
-      Alert.alert(t('common.error'), t('auth.invalidPhone'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.invalidPhone'),
+        type: 'error',
+      });
       return false;
     }
 
@@ -48,7 +59,11 @@ export default function LoginScreen() {
       await requestOTP(phoneNumber);
       router.push(`/auth/verify-otp?phone=${encodeURIComponent(phoneNumber)}`);
     } catch (error) {
-      Alert.alert(t('common.error'), t('auth.otpSendFailed'));
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.otpSendFailed'),
+        type: 'error',
+      });
     } finally {
       setLoading(false);
     }
@@ -116,6 +131,15 @@ export default function LoginScreen() {
           </View>
         </View>
       </KeyboardAvoidingView>
+      
+      <CustomAlert
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        type={alertState.type}
+        buttons={alertState.buttons}
+        onDismiss={hideAlert}
+      />
     </SafeAreaView>
   );
 }
