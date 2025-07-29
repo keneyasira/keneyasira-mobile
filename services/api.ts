@@ -139,7 +139,7 @@ class ApiService {
   // Authentication
   async requestOTP(phone: string): Promise<void> {
     await this.axios.post('/authentication/login', { 
-      phone: '0022379131416',
+      phone,
       clientType: 'patient' 
     });
   }
