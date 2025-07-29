@@ -50,7 +50,9 @@ export default function LandingScreen() {
           <View style={styles.logoContainer}>
             <Text style={styles.logoText}>
               <Text style={styles.logoMainBlue}>KENEYA </Text>
-              <Text style={styles.logoAccentBlue}>SIRA</Text>
+              <Text style={styles.logoMainBlue}>
+                <Text style={styles.logoAccentBlue}>S</Text>IRA
+              </Text>
             </Text>
           </View>
         </View>
