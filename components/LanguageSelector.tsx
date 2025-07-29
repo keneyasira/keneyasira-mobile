@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     fontSize: 14,
-    color: '#3B82F6',
+    color: '#035AA6',
     fontWeight: '700',
   },
   languageList: {

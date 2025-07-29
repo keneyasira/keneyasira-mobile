@@ -440,9 +440,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   timeSlot: {
-    backgroundColor: '#EBF8FF',
+    backgroundColor: '#E6F3FF',
     borderWidth: 1,
-    borderColor: '#3B82F6',
+    borderColor: '#035AA6',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
   },
   timeSlotText: {
     fontSize: 14,
-    color: '#3B82F6',
+    color: '#035AA6',
     marginLeft: 6,
     fontWeight: '500',
   },
