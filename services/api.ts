@@ -110,14 +110,18 @@ class ApiService {
 
   async getPracticianById(id: string): Promise<Practician> {
     const response: AxiosResponse<Practician> = await this.axios.get(`/practicians/${id}`);
-    return response.data;
+    return response.data.data;
   }
 
   async getPracticianTimeSlots(practicianId: string, date: string): Promise<TimeSlot[]> {
     const response: AxiosResponse<TimeSlot[]> = await this.axios.get(`/practicians/${practicianId}/time-slots`, {
-      params: { date },
+      params: { 
+        startDate: date,
+        endDate: date,
+        sort: ['startTime:ASC']
+      },
     });
-    return response.data;
+    return response.data.data || [];
   }
 
   // Establishments
@@ -130,14 +134,30 @@ class ApiService {
 
   async getEstablishmentById(id: string): Promise<Establishment> {
     const response: AxiosResponse<Establishment> = await this.axios.get(`/establishments/${id}`);
-    return response.data;
+    return response.data.data;
   }
 
   async getEstablishmentTimeSlots(establishmentId: string, date: string): Promise<TimeSlot[]> {
     const response: AxiosResponse<TimeSlot[]> = await this.axios.get(`/establishments/${establishmentId}/time-slots`, {
-      params: { date },
+      params: { 
+        page: 1,
+        limit: 50,
+        sort: ['startTime:ASC'],
+        date 
+      },
     });
-    return response.data;
+    return response.data.data || [];
+  }
+
+  async getEstablishmentPracticians(establishmentId: string): Promise<Practician[]> {
+    const response: AxiosResponse<Practician[]> = await this.axios.get(`/establishments/${establishmentId}/practicians`, {
+      params: {
+        page: 1,
+        limit: 50,
+        sort: ['firstName:ASC']
+      },
+    });
+    return response.data.data || [];
   }
 
   // Appointments
