@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { User, Mail, Phone, MapPin, Calendar, CreditCard as Edit3, Save, LogOut } from 'lucide-react-native';
+import { User, Mail, Phone, MapPin, Calendar, Edit, Save, LogOut } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -94,7 +94,7 @@ export default function ProfileScreen() {
           {isEditing ? (
             <Save size={20} color="#3B82F6" />
           ) : (
-            <Edit3 size={20} color="#3B82F6" />
+            <Edit size={20} color="#3B82F6" />
           )}
         </TouchableOpacity>
       </View>
