@@ -92,6 +92,7 @@ export default function SearchScreen() {
 
       setResults(combinedResults);
     } catch (error) {
+      console.log(error.message);
       Alert.alert('Error', 'Failed to search. Please try again.');
     } finally {
       setLoading(false);
