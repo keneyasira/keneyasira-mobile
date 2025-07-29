@@ -284,7 +284,6 @@ class ApiService {
         sort: ['date:DESC']
       }
     });
-    console.log('API Response for appointments:', response.data);
     return response.data.data || [];
   }
 
