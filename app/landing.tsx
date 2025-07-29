@@ -6,17 +6,19 @@ import {
   StyleSheet,
   Image,
   Linking,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar, LogIn, Globe, Stethoscope } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/LanguageSelector';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 export default function LandingScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { alertState, showAlert, hideAlert } = useCustomAlert();
 
   const handleDoctorPortal = async () => {
     const url = 'https://keneyasira.com';
@@ -25,15 +27,23 @@ export default function LandingScreen() {
       if (supported) {
         await Linking.openURL(url);
       } else {
-        Alert.alert(t('common.error'), t('landing.cannotOpenLink'));
+        showAlert({
+          title: t('common.error'),
+          message: t('landing.cannotOpenLink'),
+          type: 'error',
+        });
       }
     } catch (error) {
-      Alert.alert(t('common.error'), t('landing.cannotOpenLink'));
+      showAlert({
+        title: t('common.error'),
+        message: t('landing.cannotOpenLink'),
+        type: 'error',
+      });
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.content}>
         {/* Logo Section */}
         <View style={styles.logoSection}>
@@ -106,6 +116,15 @@ export default function LandingScreen() {
           <Text style={styles.footerText}>{t('landing.footerText')}</Text>
         </View>
       </View>
+      
+      <CustomAlert
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        type={alertState.type}
+        buttons={alertState.buttons}
+        onDismiss={hideAlert}
+      />
     </SafeAreaView>
   );
 }
@@ -270,7 +289,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     alignItems: 'center',
-    paddingBottom: 20,
+    paddingBottom: 40,
   },
   footerText: {
     fontSize: 12,
