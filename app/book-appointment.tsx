@@ -444,6 +444,7 @@ const styles = StyleSheet.create({
   },
   timeSlotContent: {
     flex: 1,
+    flexWrap: 'wrap'
   },
   timeSlotHeader: {
     flexDirection: 'row',
