@@ -86,7 +86,7 @@ export default function SearchScreen() {
         doctorsResponse.data.map(async (doctor: Practician) => {
           try {
             const timeSlots = await apiService.getPracticianTimeSlots(doctor.id, today);
-            console.log('doctor timeslots', timeSlots);
+
             return {
               type: 'doctor' as const,
               data: doctor,
@@ -105,7 +105,7 @@ export default function SearchScreen() {
         establishmentsResponse.data.map(async (establishment: Establishment) => {
           try {
             const timeSlots = await apiService.getEstablishmentTimeSlots(establishment.id, today);
-            console.log('establishment timeslots', timeSlots);
+
             return {
               type: 'establishment' as const,
               data: establishment,
