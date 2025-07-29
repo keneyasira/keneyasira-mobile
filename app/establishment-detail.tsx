@@ -61,8 +61,7 @@ export default function EstablishmentDetailScreen() {
     try {
       setPracticiansLoading(true);
       const response = await apiService.getEstablishmentPracticians(establishment.id);
-      console.log(response);
-      setPracticians(response.data);
+      setPracticians(response);
     } catch (error) {
       console.error('Failed to load practicians:', error);
       setPracticians([]);
@@ -76,8 +75,8 @@ export default function EstablishmentDetailScreen() {
 
     try {
       setTimeSlotsLoading(true);
-      const response = await apiService.getEstablishmentTimeSlots(establishment.id, selectedDate);
-      setTimeSlots(response.data);
+      const data = await apiService.getEstablishmentTimeSlots(establishment.id, selectedDate);
+      setTimeSlots(data);
     } catch (error) {
       console.error('Failed to load time slots:', error);
       setTimeSlots([]);
