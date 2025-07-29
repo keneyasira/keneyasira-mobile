@@ -75,7 +75,7 @@ export default function EstablishmentDetailScreen() {
           Dr. {practician.user.firstName} {practician.user.lastName}
         </Text>
         <Text style={styles.practicianSpecialty}>
-          {practician.specialties.map(s => s.name).join(', ')}
+          {practician.specialties.map(s => t(`specialties.${s.name}`, s.name)).join(', ')}
         </Text>
       </View>
     </TouchableOpacity>

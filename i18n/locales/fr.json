@@ -177,5 +177,24 @@
     "october": "Octobre",
     "november": "Novembre",
     "december": "Décembre"
+  },
+  "specialties": {
+    "Cardiology": "Cardiologie",
+    "Dermatology": "Dermatologie",
+    "Endocrinology": "Endocrinologie",
+    "Gastroenterology": "Gastro-entérologie",
+    "General Medicine": "Médecine Générale",
+    "Gynecology": "Gynécologie",
+    "Neurology": "Neurologie",
+    "Oncology": "Oncologie",
+    "Ophthalmology": "Ophtalmologie",
+    "Orthopedics": "Orthopédie",
+    "Otolaryngology": "Oto-rhino-laryngologie",
+    "Pediatrics": "Pédiatrie",
+    "Psychiatry": "Psychiatrie",
+    "Pulmonology": "Pneumologie",
+    "Radiology": "Radiologie",
+    "Surgery": "Chirurgie",
+    "Urology": "Urologie"
   }
 }
