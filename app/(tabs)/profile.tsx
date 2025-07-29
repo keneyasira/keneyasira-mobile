@@ -21,6 +21,7 @@ export default function ProfileScreen() {
     firstName: patient?.user.firstName || '',
     lastName: patient?.user.lastName || '',
     phone: patient?.user.phone || '',
+    birthDate: patient?.birthDate || '',
     address: '[DOES NOT EXIST]',
     city: '[DOES NOT EXIST]',
   });
@@ -200,7 +201,7 @@ export default function ProfileScreen() {
                 <Calendar size={18} color="#6B7280" />
                 <TextInput
                   style={[styles.input, styles.inputDisabled]}
-                  value={formatDate(patient.user.birthDate)}
+                  value={formatDate(formData.birthDate)}
                   editable={false}
                   placeholder="Date of birth"
                 />
