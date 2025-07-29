@@ -1,4 +1,11 @@
 // API Types based on OpenAPI specification
+export interface Specialty {
+  id: string;
+  name: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Patient {
   id: string;
   userId: string;

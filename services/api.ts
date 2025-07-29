@@ -100,6 +100,18 @@ class ApiService {
     return response.data;
   }
 
+  // Specialties
+  async getSpecialties(): Promise<Specialty[]> {
+    const response: AxiosResponse<{data: Specialty[]}> = await this.axios.get('/specialties', {
+      params: {
+        page: 1,
+        limit: 100,
+        sort: ['name:ASC']
+      },
+    });
+    return response.data.data;
+  }
+
   // Practicians
   async searchPracticians(filters: SearchFilters): Promise<Practician[]> {
     const response: AxiosResponse<Practician[]> = await this.axios.get('/practicians', {
