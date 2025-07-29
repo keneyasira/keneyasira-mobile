@@ -104,7 +104,7 @@ export default function AppointmentsScreen() {
           <View style={styles.timeContainer}>
             <Clock size={16} color="#6B7280" />
             <Text style={styles.timeText}>
-              {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
+              {formatTime(appointment.timeSlot.startTime)} - {formatTime(appointment.timeSlot.endTime)}
             </Text>
           </View>
         </View>
