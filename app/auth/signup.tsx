@@ -313,13 +313,27 @@ export default function SignupScreen() {
               />
             </View>
 
+            {cooldownTime > 0 && (
+              <Text style={styles.cooldownWarning}>
+                {t('auth.otpRateLimit')}
+              </Text>
+            )}
+
             <TouchableOpacity
-              style={[styles.button, loading && styles.buttonDisabled]}
+              style={[styles.button, (loading || cooldownTime > 0) && styles.buttonDisabled]}
               onPress={handleSignup}
-              disabled={loading}
+              disabled={loading || cooldownTime > 0}
             >
               {loading ? (
                 <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : cooldownTime > 0 ? (
+                <Text style={styles.buttonText}>
+                  {t('auth.waitBeforeRetry', { 
+                    time: cooldownTime > 60 
+                      ? `${Math.floor(cooldownTime / 60)}m ${cooldownTime % 60}s`
+                      : `${cooldownTime}s`
+                  })}
+                </Text>
               ) : (
                 <>
                   <Text style={styles.buttonText}>{t('auth.createAccount')}</Text>
@@ -339,9 +353,6 @@ export default function SignupScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      
-      // Set initial cooldown
-      setCooldownTime(60);
       
       <CustomAlert
         visible={alertState.visible}
@@ -405,25 +416,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     marginBottom: 16,
-              style={[styles.button, (loading || cooldownTime > 0) && styles.buttonDisabled]}
+  },
   input: {
-              disabled={loading || cooldownTime > 0}
+    flex: 1,
     fontSize: 16,
-            {cooldownTime > 0 && (
-              <Text style={styles.cooldownWarning}>
-                {t('auth.otpRateLimit')}
-              </Text>
-            )}
     color: '#111827',
     marginLeft: 12,
-              ) : cooldownTime > 0 ? (
-                <Text style={styles.buttonText}>
-                  {t('auth.waitBeforeRetry', { 
-                    time: cooldownTime > 60 
-                      ? `${Math.floor(cooldownTime / 60)}m ${cooldownTime % 60}s`
-                      : `${cooldownTime}s`
-                  })}
-                </Text>
   },
   button: {
     flexDirection: 'row',
