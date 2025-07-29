@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Phone, Mail, Calendar, User } from 'lucide-react-native';
@@ -15,6 +14,8 @@ import { Practician } from '@/types/api';
 import { apiService } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 export default function DoctorDetailScreen() {
   const { t } = useTranslation();
@@ -23,6 +24,7 @@ export default function DoctorDetailScreen() {
   const { patient } = useAuth();
   const [doctor, setDoctor] = useState<Practician | null>(null);
   const [loading, setLoading] = useState(true);
+  const { alertState, showAlert, hideAlert } = useCustomAlert();
 
   useEffect(() => {
     if (id) {
@@ -36,7 +38,11 @@ export default function DoctorDetailScreen() {
       const data = await apiService.getPracticianById(id);
       setDoctor(data);
     } catch (error) {
-      Alert.alert(t('common.error'), t('doctorDetail.loadFailed'));
+      showAlert({
+        title: t('common.error'),
+        message: t('doctorDetail.loadFailed'),
+        type: 'error',
+      });
       router.back();
     } finally {
       setLoading(false);
@@ -118,6 +124,15 @@ export default function DoctorDetailScreen() {
         <Calendar size={20} color="#FFFFFF" />
         <Text style={styles.bookAppointmentButtonText}>{t('doctorDetail.bookAppointment')}</Text>
       </TouchableOpacity>
+      
+      <CustomAlert
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        type={alertState.type}
+        buttons={alertState.buttons}
+        onDismiss={hideAlert}
+      />
     </SafeAreaView>
   );
 }
