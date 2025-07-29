@@ -248,6 +248,8 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     color: '#111827',
+    flex: 1,
+    textAlign: 'center',
   },
   editButton: {
     padding: 8,
