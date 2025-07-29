@@ -162,8 +162,8 @@ class ApiService {
 
   // Appointments
   async createAppointment(request: CreateAppointmentRequest): Promise<Appointment> {
-    const response: AxiosResponse<Appointment> = await this.axios.post('/appointments', request);
-    return response.data;
+    const response: AxiosResponse<{data: Appointment}> = await this.axios.post('/appointments', request);
+    return response.data.data;
   }
 
   async getPatientAppointments(patientId: string): Promise<Appointment[]> {

@@ -12,16 +12,19 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, MapPin, Star, Phone, Mail, Calendar, Clock } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Practician, TimeSlot } from '@/types/api';
+import { Practician, TimeSlot, CreateAppointmentRequest } from '@/types/api';
 import { apiService } from '@/services/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function DoctorDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { patient } = useAuth();
   const [doctor, setDoctor] = useState<Practician | null>(null);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeSlotsLoading, setTimeSlotsLoading] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
   useEffect(() => {
@@ -73,8 +76,12 @@ export default function DoctorDetailScreen() {
     });
   };
 
-  const handleBookAppointment = (timeSlot: TimeSlot) => {
-    // Navigate to booking screen or show booking modal
+  const handleBookAppointment = async (timeSlot: TimeSlot) => {
+    if (!patient) {
+      Alert.alert('Error', 'Please log in to book an appointment');
+      return;
+    }
+
     Alert.alert(
       'Book Appointment',
       `Would you like to book an appointment at ${formatTime(timeSlot.startTime)}?`,
@@ -82,9 +89,24 @@ export default function DoctorDetailScreen() {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Book',
-          onPress: () => {
-            // Implement booking logic
-            Alert.alert('Success', 'Appointment booking functionality will be implemented');
+          onPress: async () => {
+            try {
+              setBookingLoading(true);
+              const appointmentRequest: CreateAppointmentRequest = {
+                patientId: patient.id,
+                timeSlotId: timeSlot.id,
+              };
+              
+              await apiService.createAppointment(appointmentRequest);
+              Alert.alert('Success', 'Appointment booked successfully!');
+              
+              // Refresh time slots to show updated availability
+              await loadTimeSlots();
+            } catch (error) {
+              Alert.alert('Error', 'Failed to book appointment. Please try again.');
+            } finally {
+              setBookingLoading(false);
+            }
           },
         },
       ]
@@ -198,6 +220,13 @@ export default function DoctorDetailScreen() {
           </Text>
         </View>
       </ScrollView>
+      
+      {bookingLoading && (
+        <View style={styles.bookingOverlay}>
+          <ActivityIndicator size="large" color="#3B82F6" />
+          <Text style={styles.bookingText}>Booking appointment...</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -374,5 +403,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#374151',
     lineHeight: 24,
+  },
+  bookingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bookingText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    marginTop: 12,
   },
 });
