@@ -41,6 +41,10 @@ export default function SearchScreen() {
   const [loading, setLoading] = useState(false);
   const [specialtiesLoading, setSpecialtiesLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMoreResults, setHasMoreResults] = useState(false);
+  const ITEMS_PER_PAGE = 10;
 
   useEffect(() => {
     loadSpecialties();
@@ -49,11 +53,13 @@ export default function SearchScreen() {
   useEffect(() => {
     if (searchQuery.length >= 2 || selectedSpecialty) {
       const delayTimer = setTimeout(() => {
-        performSearch();
+        performSearch(true);
       }, 500);
       return () => clearTimeout(delayTimer);
     } else {
       setResults([]);
+      setCurrentPage(1);
+      setHasMoreResults(false);
     }
   }, [searchQuery, selectedSpecialty]);
 
@@ -69,12 +75,21 @@ export default function SearchScreen() {
     }
   };
 
-  const performSearch = async () => {
-    setLoading(true);
+  const performSearch = async (resetResults = false) => {
+    if (resetResults) {
+      setLoading(true);
+      setCurrentPage(1);
+    } else {
+      setLoadingMore(true);
+    }
+
     try {
+      const page = resetResults ? 1 : currentPage;
       const searchFilters = {
         ...(searchQuery && { name_search: searchQuery }),
         ...(selectedSpecialty && { specialty: selectedSpecialty.id }),
+        limit: ITEMS_PER_PAGE,
+        offset: (page - 1) * ITEMS_PER_PAGE,
       };
 
       // Search both doctors and establishments in parallel
@@ -87,7 +102,7 @@ export default function SearchScreen() {
       const today = new Date().toISOString().split('T')[0];
       
       const doctorResults = await Promise.all(
-        doctorsResponse.data.map(async (doctor: Practician) => {
+        (doctorsResponse.data || []).map(async (doctor: Practician) => {
           try {
             const timeSlots = await apiService.getPracticianTimeSlots(doctor.id, today);
 
@@ -106,7 +121,7 @@ export default function SearchScreen() {
       );
 
       const establishmentResults = await Promise.all(
-        establishmentsResponse.data.map(async (establishment: Establishment) => {
+        (establishmentsResponse.data || []).map(async (establishment: Establishment) => {
           try {
             const timeSlots = await apiService.getEstablishmentTimeSlots(establishment.id, today);
 
@@ -126,20 +141,36 @@ export default function SearchScreen() {
 
       const combinedResults: SearchResult[] = [...doctorResults, ...establishmentResults];
 
-      setResults(combinedResults);
+      if (resetResults) {
+        setResults(combinedResults);
+      } else {
+        setResults(prev => [...prev, ...combinedResults]);
+        setCurrentPage(prev => prev + 1);
+      }
+
+      // Check if there are more results available
+      const totalResults = (doctorsResponse.data?.length || 0) + (establishmentsResponse.data?.length || 0);
+      setHasMoreResults(totalResults === ITEMS_PER_PAGE);
+
     } catch (error) {
       Alert.alert('Error', 'Failed to search. Please try again.');
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
+  const loadMoreResults = () => {
+    if (!loadingMore && hasMoreResults) {
+      performSearch(false);
+    }
+  };
   const onRefresh = async () => {
     setRefreshing(true);
     try {
       await loadSpecialties();
       if (searchQuery.length >= 2 || selectedSpecialty) {
-        await performSearch();
+        await performSearch(true);
       }
     } catch (error) {
       console.error('Failed to refresh:', error);
@@ -358,6 +389,23 @@ export default function SearchScreen() {
                 colors={['#035AA6']}
                 tintColor="#035AA6"
               />
+            }
+            ListFooterComponent={
+              hasMoreResults ? (
+                <View style={styles.loadMoreContainer}>
+                  <TouchableOpacity
+                    style={[styles.loadMoreButton, loadingMore && styles.loadMoreButtonDisabled]}
+                    onPress={loadMoreResults}
+                    disabled={loadingMore}
+                  >
+                    {loadingMore ? (
+                      <ActivityIndicator size="small" color="#035AA6" />
+                    ) : (
+                      <Text style={styles.loadMoreText}>Load More</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              ) : null
             }
             ListEmptyComponent={
               searchQuery.length >= 2 || selectedSpecialty ? (
@@ -634,5 +682,27 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     textAlign: 'center',
     lineHeight: 24,
+  },
+  loadMoreContainer: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+  loadMoreButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 2,
+    borderColor: '#035AA6',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    minWidth: 120,
+    alignItems: 'center',
+  },
+  loadMoreButtonDisabled: {
+    opacity: 0.6,
+  },
+  loadMoreText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#035AA6',
   },
 });
