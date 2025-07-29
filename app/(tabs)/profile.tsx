@@ -9,12 +9,14 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { User, Mail, Phone, MapPin, Calendar, CreditCard as Edit, Save, LogOut } from 'lucide-react-native';
+import { Bell } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/LanguageSelector';
 import CustomAlert from '@/components/CustomAlert';
 import { useCustomAlert } from '@/hooks/useCustomAlert';
+import { notificationService } from '@/services/notificationService';
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
@@ -22,6 +24,7 @@ export default function ProfileScreen() {
   const { patient, logout, updatePatient } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const { alertState, showAlert, hideAlert } = useCustomAlert();
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [formData, setFormData] = useState({
     firstName: patient?.user.firstName || '',
     lastName: patient?.user.lastName || '',
@@ -49,6 +52,47 @@ export default function ProfileScreen() {
     }
   };
 
+  const toggleNotifications = async () => {
+    try {
+      if (notificationsEnabled) {
+        // Disable notifications
+        await notificationService.clearAllNotifications();
+        if (patient) {
+          await apiService.removePatientPushToken(patient.id);
+        }
+        setNotificationsEnabled(false);
+        showAlert({
+          title: t('common.success'),
+          message: 'Notifications disabled',
+          type: 'success',
+        });
+      } else {
+        // Enable notifications
+        const token = await notificationService.initialize();
+        if (token && patient) {
+          await apiService.updatePatientPushToken(patient.id, token);
+          setNotificationsEnabled(true);
+          showAlert({
+            title: t('common.success'),
+            message: 'Notifications enabled',
+            type: 'success',
+          });
+        } else {
+          showAlert({
+            title: t('common.error'),
+            message: 'Failed to enable notifications',
+            type: 'error',
+          });
+        }
+      }
+    } catch (error) {
+      showAlert({
+        title: t('common.error'),
+        message: 'Failed to update notification settings',
+        type: 'error',
+      });
+    }
+  };
   const handleLogout = () => {
     showAlert({
       title: t('profile.logout'),
@@ -112,6 +156,27 @@ export default function ProfileScreen() {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <LanguageSelector />
+        
+        <TouchableOpacity style={styles.notificationCard} onPress={toggleNotifications}>
+          <View style={styles.notificationContent}>
+            <Bell size={20} color="#035AA6" />
+            <View style={styles.notificationText}>
+              <Text style={styles.notificationLabel}>Appointment Reminders</Text>
+              <Text style={styles.notificationDescription}>
+                Get notified before your appointments
+              </Text>
+            </View>
+            <View style={[
+              styles.notificationToggle,
+              notificationsEnabled && styles.notificationToggleActive
+            ]}>
+              <View style={[
+                styles.notificationToggleThumb,
+                notificationsEnabled && styles.notificationToggleThumbActive
+              ]} />
+            </View>
+          </View>
+        </TouchableOpacity>
         
         <View style={styles.profileCard}>
           <View style={styles.avatarContainer}>
@@ -389,6 +454,62 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#EF4444',
     marginLeft: 8,
+  },
+  notificationCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+  },
+  notificationContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  notificationText: {
+    marginLeft: 16,
+    flex: 1,
+  },
+  notificationLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  notificationDescription: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  notificationToggle: {
+    width: 50,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#E5E7EB',
+    justifyContent: 'center',
+    paddingHorizontal: 2,
+  },
+  notificationToggleActive: {
+    backgroundColor: '#035AA6',
+  },
+  notificationToggleThumb: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  notificationToggleThumbActive: {
+    transform: [{ translateX: 20 }],
   },
   errorContainer: {
     flex: 1,

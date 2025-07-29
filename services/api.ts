@@ -296,6 +296,18 @@ class ApiService {
     const response: AxiosResponse<Appointment> = await this.axios.post(`/appointments/${id}/cancel`);
     return response.data.data;
   }
+
+  // Push token management
+  async updatePatientPushToken(patientId: string, pushToken: string): Promise<void> {
+    await this.axios.put(`/patients/${patientId}/push-token`, {
+      pushToken,
+      platform: Platform.OS,
+    });
+  }
+
+  async removePatientPushToken(patientId: string): Promise<void> {
+    await this.axios.delete(`/patients/${patientId}/push-token`);
+  }
 }
 
 export const apiService = new ApiService();

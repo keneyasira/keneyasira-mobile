@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Patient } from '@/types/api';
 import { apiService } from '@/services/api';
+import { notificationService } from '@/services/notificationService';
 
 interface AuthContextType {
   patient: Patient | null;
@@ -54,6 +55,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response: Patient = await apiService.verifyOTP(phone, otp);
       setPatient(response);
+      
+      // Send push token to server after successful login
+      try {
+        await notificationService.sendPushTokenToServer(response.id);
+      } catch (error) {
+        console.error('Failed to send push token:', error);
+      }
     } catch (error) {
       console.error('Login with OTP failed:', error);
       throw error;
@@ -63,6 +71,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
+      // Remove push token from server before logout
+      if (patient) {
+        try {
+          await apiService.removePatientPushToken(patient.id);
+        } catch (error) {
+          console.error('Failed to remove push token:', error);
+        }
+      }
+      
+      // Clear all scheduled notifications
+      await notificationService.clearAllNotifications();
+      
       await apiService.logout();
       setPatient(null);
     } catch (error) {

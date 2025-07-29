@@ -16,6 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import CustomAlert from '@/components/CustomAlert';
 import { useCustomAlert } from '@/hooks/useCustomAlert';
+import { notificationService } from '@/services/notificationService';
 
 interface WeekData {
   startDate: Date;
@@ -188,6 +189,16 @@ export default function BookAppointmentScreen() {
               };
               
               await apiService.createAppointment(appointmentRequest);
+              
+              // Schedule appointment reminders
+              try {
+                const appointmentData = await apiService.createAppointment(appointmentRequest);
+                await notificationService.scheduleMultipleReminders(appointmentData, [1440, 60, 15]); // 24h, 1h, 15min
+              } catch (notificationError) {
+                console.error('Failed to schedule notifications:', notificationError);
+                // Don't fail the booking if notifications fail
+              }
+              
               showAlert({
                 title: t('common.success'),
                 message: t('bookAppointment.bookingSuccess'),
