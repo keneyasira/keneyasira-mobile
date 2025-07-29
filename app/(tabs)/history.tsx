@@ -31,7 +31,12 @@ export default function HistoryScreen() {
       
       // Filter only past appointments and sort by date descending
       const pastAppointments = data
-        .filter(appointment => new Date(appointment.date) < new Date())
+        .filter(appointment => 
+          new Date(appointment.date) < new Date() || 
+          appointment.appointmentStatus.name === 'completed' || 
+          appointment.appointmentStatus.name === 'cancelled' || 
+          appointment.appointmentStatus.name === 'no-show'
+        )
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       
       setAppointments(pastAppointments);
@@ -63,6 +68,9 @@ export default function HistoryScreen() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case 'scheduled':
+      case 'confirmed':
+        return '#3B82F6';
       case 'completed':
         return '#10B981';
       case 'cancelled':
@@ -76,6 +84,9 @@ export default function HistoryScreen() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
+      case 'scheduled':
+      case 'confirmed':
+        return '⏰';
       case 'completed':
         return '✓';
       case 'cancelled':
@@ -94,10 +105,10 @@ export default function HistoryScreen() {
           <Calendar size={18} color="#3B82F6" />
           <Text style={styles.dateText}>{formatDate(appointment.date)}</Text>
         </View>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(appointment.status) }]}>
-          <Text style={styles.statusIcon}>{getStatusIcon(appointment.status)}</Text>
+        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(appointment.appointmentStatus.name) }]}>
+          <Text style={styles.statusIcon}>{getStatusIcon(appointment.appointmentStatus.name)}</Text>
           <Text style={styles.statusText}>
-            {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+            {appointment.appointmentStatus.name.charAt(0).toUpperCase() + appointment.appointmentStatus.name.slice(1)}
           </Text>
         </View>
       </View>
@@ -113,10 +124,10 @@ export default function HistoryScreen() {
         <View style={styles.providerContainer}>
           <User size={16} color="#6B7280" />
           <Text style={styles.providerText}>
-            Dr. {appointment.practician.user?.firstName || appointment.practician.firstName} {appointment.practician.user?.lastName || appointment.practician.lastName}
+            Dr. {appointment.practician.user.firstName} {appointment.practician.user.lastName}
           </Text>
           <Text style={styles.specialtyText}>
-            {appointment.practician.specialties?.map(s => s.name).join(', ') || 'Specialty not available'}
+            {appointment.practician.specialties.map(s => s.name).join(', ')}
           </Text>
         </View>
       )}
@@ -127,13 +138,6 @@ export default function HistoryScreen() {
           <Text style={styles.locationText}>
             {appointment.establishment.name}, {appointment.establishment.city}
           </Text>
-        </View>
-      )}
-
-      {appointment.notes && (
-        <View style={styles.notesContainer}>
-          <FileText size={16} color="#6B7280" />
-          <Text style={styles.notesText}>{appointment.notes}</Text>
         </View>
       )}
     </View>

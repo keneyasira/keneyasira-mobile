@@ -80,6 +80,7 @@ export default function AppointmentsScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'scheduled':
+      case 'confirmed':
         return '#3B82F6';
       case 'completed':
         return '#10B981';
@@ -107,9 +108,9 @@ export default function AppointmentsScreen() {
             </Text>
           </View>
         </View>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(appointment.status) }]}>
+        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(appointment.appointmentStatus.name) }]}>
           <Text style={styles.statusText}>
-            {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+            {appointment.appointmentStatus.name.charAt(0).toUpperCase() + appointment.appointmentStatus.name.slice(1)}
           </Text>
         </View>
       </View>
@@ -119,7 +120,7 @@ export default function AppointmentsScreen() {
           <View style={styles.providerContainer}>
             <User size={16} color="#6B7280" />
             <Text style={styles.providerName}>
-              Dr. {appointment.practician.user?.firstName || appointment.practician.firstName} {appointment.practician.user?.lastName || appointment.practician.lastName}
+              Dr. {appointment.practician.user.firstName} {appointment.practician.user.lastName}
             </Text>
           </View>
         )}
@@ -131,11 +132,7 @@ export default function AppointmentsScreen() {
         )}
       </View>
 
-      {appointment.notes && (
-        <Text style={styles.notesText}>{appointment.notes}</Text>
-      )}
-
-      {activeTab === 'upcoming' && appointment.status === 'scheduled' && (
+      {activeTab === 'upcoming' && (appointment.appointmentStatus.name === 'scheduled' || appointment.appointmentStatus.name === 'confirmed') && (
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={() => handleCancelAppointment(appointment.id)}
@@ -190,7 +187,7 @@ export default function AppointmentsScreen() {
                 activeTab === 'upcoming' && styles.tabTextActive,
               ]}
             >
-              Upcoming ({appointments.filter(a => new Date(a.date) >= new Date()).length})
+              Upcoming ({appointments.filter(a => new Date(a.date) >= new Date() && (a.appointmentStatus.name === 'scheduled' || a.appointmentStatus.name === 'confirmed')).length})
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -206,7 +203,7 @@ export default function AppointmentsScreen() {
                 activeTab === 'past' && styles.tabTextActive,
               ]}
             >
-              Past ({appointments.filter(a => new Date(a.date) < new Date()).length})
+              Past ({appointments.filter(a => new Date(a.date) < new Date() || a.appointmentStatus.name === 'completed' || a.appointmentStatus.name === 'cancelled' || a.appointmentStatus.name === 'no-show').length})
             </Text>
           </TouchableOpacity>
         </View>
