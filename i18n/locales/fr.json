@@ -147,7 +147,7 @@
     "loadFailed": "Échec du chargement des détails de l'établissement"
   },
   "bookAppointment": {
-    "title": "réserver un rendez-vous",
+    "title": "Réserver un rendez-vous",
     "bookingAppointment": "Réservation du rendez-vous...",
     "bookingSuccess": "Rendez-vous réservé avec succès !",
     "bookingFailed": "Échec de la réservation du rendez-vous. Veuillez réessayer.",
