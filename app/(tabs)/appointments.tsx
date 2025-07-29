@@ -44,11 +44,25 @@ export default function AppointmentsScreen() {
 
   const getFilteredAppointments = () => {
     const now = new Date();
+    now.setHours(0, 0, 0, 0); // Set to start of today for proper date comparison
+    
     return appointments.filter((appointment) => {
       const appointmentDate = new Date(appointment.timeslot.date);
-      return activeTab === 'upcoming' 
-        ? appointmentDate >= now 
-        : appointmentDate < now;
+      appointmentDate.setHours(0, 0, 0, 0); // Set to start of day for comparison
+      
+      if (activeTab === 'upcoming') {
+        // Upcoming: future dates OR today with scheduled/confirmed status
+        return (appointmentDate > now) || 
+               (appointmentDate.getTime() === now.getTime() && 
+                (appointment.appointmentStatus.name === 'scheduled' || 
+                 appointment.appointmentStatus.name === 'confirmed'));
+      } else {
+        // Past: past dates OR completed/cancelled/no-show status regardless of date
+        return (appointmentDate < now) || 
+               (appointment.appointmentStatus.name === 'completed' || 
+                appointment.appointmentStatus.name === 'cancelled' || 
+                appointment.appointmentStatus.name === 'no-show');
+      }
     }).sort((a, b) => {
       const dateA = new Date(a.timeslot.date);
       const dateB = new Date(b.timeslot.date);
@@ -187,7 +201,16 @@ export default function AppointmentsScreen() {
                 activeTab === 'upcoming' && styles.tabTextActive,
               ]}
             >
-              Upcoming ({appointments.filter(a => new Date(a.timeslot.date) >= new Date() && (a.appointmentStatus.name === 'scheduled' || a.appointmentStatus.name === 'confirmed')).length})
+              Upcoming ({appointments.filter(a => {
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                const appointmentDate = new Date(a.timeslot.date);
+                appointmentDate.setHours(0, 0, 0, 0);
+                return (appointmentDate > now) || 
+                       (appointmentDate.getTime() === now.getTime() && 
+                        (a.appointmentStatus.name === 'scheduled' || 
+                         a.appointmentStatus.name === 'confirmed'));
+              }).length})
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -203,7 +226,16 @@ export default function AppointmentsScreen() {
                 activeTab === 'past' && styles.tabTextActive,
               ]}
             >
-              Past ({appointments.filter(a => new Date(a.timeslot.date) < new Date() || a.appointmentStatus.name === 'completed' || a.appointmentStatus.name === 'cancelled' || a.appointmentStatus.name === 'no-show').length})
+              Past ({appointments.filter(a => {
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                const appointmentDate = new Date(a.timeslot.date);
+                appointmentDate.setHours(0, 0, 0, 0);
+                return (appointmentDate < now) || 
+                       (a.appointmentStatus.name === 'completed' || 
+                        a.appointmentStatus.name === 'cancelled' || 
+                        a.appointmentStatus.name === 'no-show');
+              }).length})
             </Text>
           </TouchableOpacity>
         </View>

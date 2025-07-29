@@ -31,12 +31,16 @@ export default function HistoryScreen() {
       
       // Filter only past appointments and sort by date descending
       const pastAppointments = data
-        .filter(appointment => 
-          new Date(appointment.timeslot.date) < new Date() || 
-          appointment.appointmentStatus.name === 'completed' || 
-          appointment.appointmentStatus.name === 'cancelled' || 
-          appointment.appointmentStatus.name === 'no-show'
-        )
+        .filter(appointment => {
+          const now = new Date();
+          now.setHours(0, 0, 0, 0);
+          const appointmentDate = new Date(appointment.timeslot.date);
+          appointmentDate.setHours(0, 0, 0, 0);
+          return (appointmentDate < now) || 
+                 (appointment.appointmentStatus.name === 'completed' || 
+                  appointment.appointmentStatus.name === 'cancelled' || 
+                  appointment.appointmentStatus.name === 'no-show');
+        })
         .sort((a, b) => new Date(b.timeslot.date).getTime() - new Date(a.timeslot.date).getTime());
       
       setAppointments(pastAppointments);
