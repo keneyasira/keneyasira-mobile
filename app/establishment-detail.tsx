@@ -337,6 +337,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 20,
+    paddingBottom: 10,
   },
   loadingContainer: {
     flex: 1,
@@ -585,6 +586,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#3B82F6',
     borderRadius: 16,
     paddingVertical: 16,
+    paddingHorizontal: 20,
+    margin: 20,
     marginBottom: 20,
   },
   bookAppointmentButtonText: {
