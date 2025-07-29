@@ -191,7 +191,11 @@ class ApiService {
     phone: string;
     birthDate: string;
   }): Promise<Patient> {
-    const response: AxiosResponse<{data: Patient}> = await this.axios.post('/patients', patientData);
+    const response: AxiosResponse<{data: Patient}> = await this.axios.post('/patients', {
+      ...patientData,
+      // Ensure birthDate is in the correct format for the API
+      birthDate: new Date(patientData.birthDate).toISOString(),
+    });
     return response.data.data;
   }
 

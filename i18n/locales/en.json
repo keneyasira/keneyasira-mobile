@@ -30,7 +30,6 @@
     "sendOTP": "Send OTP",
     "enterVerificationCode": "Enter Verification Code",
     "verificationCodeSent": "We've sent a 6-digit code to {{phone}}",
-    "verificationCodeSentSignup": "We've sent a 6-digit code to {{phone}} to complete your registration",
     "verifyCode": "Verify Code",
     "resendCode": "Resend Code",
     "resendCodeIn": "Resend code in {{seconds}}s",

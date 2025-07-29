@@ -82,10 +82,16 @@ export default function SignupScreen() {
 
     try {
       setLoading(true);
-      // Store signup data temporarily and proceed to OTP verification
-      // The actual patient creation will happen after OTP verification
-      router.push(`/auth/verify-otp?phone=${encodeURIComponent(formData.phone)}&signup=true&signupData=${encodeURIComponent(JSON.stringify(formData))}`);
+      // First create the patient account
+      await apiService.createPatient(formData);
+      
+      // Then send OTP for login verification
+      await apiService.requestOTP(formData.phone);
+      
+      // Navigate to OTP verification
+      router.push(`/auth/verify-otp?phone=${encodeURIComponent(formData.phone)}&signup=true`);
     } catch (error) {
+      console.error('Signup error:', error);
       Alert.alert(t('common.error'), t('auth.signupFailed'));
     } finally {
       setLoading(false);
