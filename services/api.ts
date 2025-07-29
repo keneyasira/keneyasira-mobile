@@ -168,17 +168,17 @@ class ApiService {
 
   async getPatientAppointments(patientId: string): Promise<Appointment[]> {
     const response: AxiosResponse<Appointment[]> = await this.axios.get(`/patients/${patientId}/appointments`);
-    return response.data;
+    return response.data.data;
   }
 
   async getAppointmentById(id: string): Promise<Appointment> {
     const response: AxiosResponse<Appointment> = await this.axios.get(`/appointments/${id}`);
-    return response.data;
+    return response.data.data;
   }
 
   async cancelAppointment(id: string): Promise<Appointment> {
     const response: AxiosResponse<Appointment> = await this.axios.put(`/appointments/${id}/cancel`);
-    return response.data;
+    return response.data.data;
   }
 }
 
