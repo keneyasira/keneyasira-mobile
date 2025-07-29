@@ -87,11 +87,10 @@ export default function SearchScreen() {
           try {
             const timeSlots = await apiService.getPracticianTimeSlots(doctor.id, today);
             console.log('doctor timeslots', timeSlots);
-            const nextAvailable = timeSlots.find(slot => slot.isAvailable);
             return {
               type: 'doctor' as const,
               data: doctor,
-              nextAvailableSlot: nextAvailable,
+              nextAvailableSlot: timeSlots.find(slot => slot.available),
             };
           } catch (error) {
             return {
@@ -107,12 +106,10 @@ export default function SearchScreen() {
           try {
             const timeSlots = await apiService.getEstablishmentTimeSlots(establishment.id, today);
             console.log('establishment timeslots', timeSlots);
-          
-            const nextAvailable = timeSlots.find(slot => slot.isAvailable);
             return {
               type: 'establishment' as const,
               data: establishment,
-              nextAvailableSlot: nextAvailable,
+              nextAvailableSlot: timeSlots.find(slot => slot.available),
             };
           } catch (error) {
             return {
@@ -127,7 +124,6 @@ export default function SearchScreen() {
 
       setResults(combinedResults);
     } catch (error) {
-      console.log(error.message);
       Alert.alert('Error', 'Failed to search. Please try again.');
     } finally {
       setLoading(false);
