@@ -457,6 +457,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   timeSlotProvider: {
+    
     fontSize: 12,
     color: '#6B7280',
     fontStyle: 'italic',
