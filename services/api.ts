@@ -101,7 +101,7 @@ class ApiService {
   }
 
   // Specialties
-  async getSpecialties(): Promise<Specialty[]> {
+  getSpecialties = async (): Promise<Specialty[]> => {
     const response: AxiosResponse<{data: Specialty[]}> = await this.axios.get('/specialties', {
       params: {
         page: 1,
@@ -110,7 +110,7 @@ class ApiService {
       },
     });
     return response.data.data;
-  }
+  };
 
   // Practicians
   async searchPracticians(filters: SearchFilters): Promise<Practician[]> {
