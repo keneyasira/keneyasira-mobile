@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
   slotsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    justifyContent: 'space-between',
   },
   timeSlot: {
     backgroundColor: '#EBF8FF',
@@ -439,8 +439,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginBottom: 8,
-    flex: 1,
-    marginHorizontal: 4,
+    width: '48%',
   },
   timeSlotContent: {
     flex: 1,
