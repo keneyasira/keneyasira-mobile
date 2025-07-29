@@ -10,24 +10,18 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, MapPin, Star, Phone, Mail, Building2, Users, Clock, Calendar } from 'lucide-react-native';
+import { ArrowLeft, MapPin, Star, Phone, Mail, Building2, Users, Calendar } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Establishment, Practician, TimeSlot, CreateAppointmentRequest } from '@/types/api';
+import { Establishment, Practician } from '@/types/api';
 import { apiService } from '@/services/api';
-import { useAuth } from '@/contexts/AuthContext';
 
 export default function EstablishmentDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { patient } = useAuth();
   const [establishment, setEstablishment] = useState<Establishment | null>(null);
   const [practicians, setPracticians] = useState<Practician[]>([]);
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [practiciansLoading, setPracticiansLoading] = useState(false);
-  const [timeSlotsLoading, setTimeSlotsLoading] = useState(false);
-  const [bookingLoading, setBookingLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
   useEffect(() => {
     if (id) {
@@ -38,9 +32,8 @@ export default function EstablishmentDetailScreen() {
   useEffect(() => {
     if (establishment) {
       loadPracticians();
-      loadTimeSlots();
     }
-  }, [establishment, selectedDate]);
+  }, [establishment]);
 
   const loadEstablishmentDetails = async () => {
     try {
@@ -68,67 +61,6 @@ export default function EstablishmentDetailScreen() {
     } finally {
       setPracticiansLoading(false);
     }
-  };
-
-  const loadTimeSlots = async () => {
-    if (!establishment) return;
-
-    try {
-      setTimeSlotsLoading(true);
-      const data = await apiService.getEstablishmentTimeSlots(establishment.id, selectedDate);
-      setTimeSlots(data);
-    } catch (error) {
-      console.error('Failed to load time slots:', error);
-      setTimeSlots([]);
-    } finally {
-      setTimeSlotsLoading(false);
-    }
-  };
-
-  const formatTime = (timeString: string) => {
-    const time = new Date(`2000-01-01T${timeString}`);
-    return time.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
-  };
-
-  const handleBookAppointment = async (timeSlot: TimeSlot) => {
-    if (!patient) {
-      Alert.alert('Error', 'Please log in to book an appointment');
-      return;
-    }
-
-    Alert.alert(
-      'Book Appointment',
-      `Would you like to book an appointment at ${formatTime(timeSlot.startTime)}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Book',
-          onPress: async () => {
-            try {
-              setBookingLoading(true);
-              const appointmentRequest: CreateAppointmentRequest = {
-                patientId: patient.id,
-                timeSlotId: timeSlot.id,
-              };
-              
-              await apiService.createAppointment(appointmentRequest);
-              Alert.alert('Success', 'Appointment booked successfully!');
-              
-              // Refresh time slots to show updated availability
-              await loadTimeSlots();
-            } catch (error) {
-              Alert.alert('Error', 'Failed to book appointment. Please try again.');
-            } finally {
-              setBookingLoading(false);
-            }
-          },
-        },
-      ]
-    );
   };
 
   const PracticianCard = ({ practician }: { practician: Practician }) => (
@@ -261,52 +193,23 @@ export default function EstablishmentDetailScreen() {
           )}
         </View>
 
-        <View style={styles.availabilityCard}>
-          <Text style={styles.sectionTitle}>Available Time Slots</Text>
-          <Text style={styles.dateText}>Date: {selectedDate}</Text>
-          
-          {timeSlotsLoading ? (
-            <View style={styles.timeSlotsLoading}>
-              <ActivityIndicator size="small" color="#3B82F6" />
-            </View>
-          ) : timeSlots.length > 0 ? (
-            <View style={styles.timeSlotsContainer}>
-              {timeSlots
-                .filter(slot => slot.isAvailable)
-                .slice(0, 6)
-                .map((slot) => (
-                  <TouchableOpacity
-                    key={slot.id}
-                    style={styles.timeSlot}
-                    onPress={() => handleBookAppointment(slot)}
-                  >
-                    <Clock size={16} color="#3B82F6" />
-                    <Text style={styles.timeSlotText}>
-                      {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-            </View>
-          ) : (
-            <Text style={styles.noSlotsText}>No available time slots for this date</Text>
-          )}
+        <View style={styles.aboutCard}>
+          <Text style={styles.sectionTitle}>About</Text>
+          <Text style={styles.aboutText}>
+            {establishment.name} is a {establishment.type.name.toLowerCase()} affiliated with {establishment.affiliation.name}. 
+            We specialize in {establishment.specialties.map(s => s.name).join(', ')} and are committed to providing 
+            excellent healthcare services to our patients.
+          </Text>
         </View>
-
-        <TouchableOpacity
-          style={styles.bookAppointmentButton}
-          onPress={() => router.push(`/book-appointment?type=establishment&id=${establishment.id}`)}
-        >
-          <Calendar size={20} color="#FFFFFF" />
-          <Text style={styles.bookAppointmentButtonText}>Book Appointment</Text>
-        </TouchableOpacity>
       </ScrollView>
       
-      {bookingLoading && (
-        <View style={styles.bookingOverlay}>
-          <ActivityIndicator size="large" color="#3B82F6" />
-          <Text style={styles.bookingText}>Booking appointment...</Text>
-        </View>
-      )}
+      <TouchableOpacity
+        style={styles.bookAppointmentButton}
+        onPress={() => router.push(`/book-appointment?type=establishment&id=${establishment.id}`)}
+      >
+        <Calendar size={20} color="#FFFFFF" />
+        <Text style={styles.bookAppointmentButtonText}>Book Appointment</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -532,7 +435,7 @@ const styles = StyleSheet.create({
     color: '#3B82F6',
     fontWeight: '600',
   },
-  availabilityCard: {
+  aboutCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 20,
@@ -543,41 +446,10 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  dateText: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 12,
-  },
-  timeSlotsLoading: {
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
-  timeSlotsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  timeSlot: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#EBF8FF',
-    borderWidth: 1,
-    borderColor: '#3B82F6',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  timeSlotText: {
-    fontSize: 14,
-    color: '#3B82F6',
-    fontWeight: '500',
-    marginLeft: 4,
-  },
-  noSlotsText: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    paddingVertical: 20,
+  aboutText: {
+    fontSize: 16,
+    color: '#374151',
+    lineHeight: 24,
   },
   bookAppointmentButton: {
     flexDirection: 'row',
@@ -587,7 +459,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 20,
-    margin: 20,
     marginBottom: 20,
   },
   bookAppointmentButtonText: {
@@ -595,20 +466,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
     marginLeft: 8,
-  },
-  bookingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  bookingText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    marginTop: 12,
   },
 });
