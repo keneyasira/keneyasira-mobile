@@ -32,12 +32,12 @@ export default function HistoryScreen() {
       // Filter only past appointments and sort by date descending
       const pastAppointments = data
         .filter(appointment => 
-          new Date(appointment.date) < new Date() || 
+          new Date(appointment.timeslot.date) < new Date() || 
           appointment.appointmentStatus.name === 'completed' || 
           appointment.appointmentStatus.name === 'cancelled' || 
           appointment.appointmentStatus.name === 'no-show'
         )
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        .sort((a, b) => new Date(b.timeslot.date).getTime() - new Date(a.timeslot.date).getTime());
       
       setAppointments(pastAppointments);
     } catch (error) {
@@ -103,7 +103,7 @@ export default function HistoryScreen() {
       <View style={styles.cardHeader}>
         <View style={styles.dateContainer}>
           <Calendar size={18} color="#3B82F6" />
-          <Text style={styles.dateText}>{formatDate(appointment.date)}</Text>
+          <Text style={styles.dateText}>{formatDate(appointment.timeslot.date)}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(appointment.appointmentStatus.name) }]}>
           <Text style={styles.statusIcon}>{getStatusIcon(appointment.appointmentStatus.name)}</Text>
@@ -116,7 +116,7 @@ export default function HistoryScreen() {
       <View style={styles.timeContainer}>
         <Clock size={16} color="#6B7280" />
         <Text style={styles.timeText}>
-          {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
+          {formatTime(appointment.timeslot.startTime)} - {formatTime(appointment.timeslot.endTime)}
         </Text>
       </View>
 
@@ -145,7 +145,7 @@ export default function HistoryScreen() {
 
   const renderMonthSection = (appointments: Appointment[]) => {
     const grouped = appointments.reduce((groups: { [key: string]: Appointment[] }, appointment) => {
-      const date = new Date(appointment.date);
+      const date = new Date(appointment.timeslot.date);
       const monthYear = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
       
       if (!groups[monthYear]) {

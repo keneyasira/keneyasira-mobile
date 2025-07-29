@@ -45,13 +45,13 @@ export default function AppointmentsScreen() {
   const getFilteredAppointments = () => {
     const now = new Date();
     return appointments.filter((appointment) => {
-      const appointmentDate = new Date(appointment.date);
+      const appointmentDate = new Date(appointment.timeslot.date);
       return activeTab === 'upcoming' 
         ? appointmentDate >= now 
         : appointmentDate < now;
     }).sort((a, b) => {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
+      const dateA = new Date(a.timeslot.date);
+      const dateB = new Date(b.timeslot.date);
       return activeTab === 'upcoming' 
         ? dateA.getTime() - dateB.getTime()
         : dateB.getTime() - dateA.getTime();
@@ -99,12 +99,12 @@ export default function AppointmentsScreen() {
         <View style={styles.dateTimeContainer}>
           <View style={styles.dateContainer}>
             <Calendar size={16} color="#3B82F6" />
-            <Text style={styles.dateText}>{formatDate(appointment.date)}</Text>
+            <Text style={styles.dateText}>{formatDate(appointment.timeslot.date)}</Text>
           </View>
           <View style={styles.timeContainer}>
             <Clock size={16} color="#6B7280" />
             <Text style={styles.timeText}>
-              {formatTime(appointment.timeSlot.startTime)} - {formatTime(appointment.timeSlot.endTime)}
+              {formatTime(appointment.timeslot.startTime)} - {formatTime(appointment.timeslot.endTime)}
             </Text>
           </View>
         </View>
@@ -187,7 +187,7 @@ export default function AppointmentsScreen() {
                 activeTab === 'upcoming' && styles.tabTextActive,
               ]}
             >
-              Upcoming ({appointments.filter(a => new Date(a.date) >= new Date() && (a.appointmentStatus.name === 'scheduled' || a.appointmentStatus.name === 'confirmed')).length})
+              Upcoming ({appointments.filter(a => new Date(a.timeslot.date) >= new Date() && (a.appointmentStatus.name === 'scheduled' || a.appointmentStatus.name === 'confirmed')).length})
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -203,7 +203,7 @@ export default function AppointmentsScreen() {
                 activeTab === 'past' && styles.tabTextActive,
               ]}
             >
-              Past ({appointments.filter(a => new Date(a.date) < new Date() || a.appointmentStatus.name === 'completed' || a.appointmentStatus.name === 'cancelled' || a.appointmentStatus.name === 'no-show').length})
+              Past ({appointments.filter(a => new Date(a.timeslot.date) < new Date() || a.appointmentStatus.name === 'completed' || a.appointmentStatus.name === 'cancelled' || a.appointmentStatus.name === 'no-show').length})
             </Text>
           </TouchableOpacity>
         </View>

@@ -127,9 +127,6 @@ export interface Appointment {
   practicianId?: string;
   establishmentId?: string;
   timeSlotId: string;
-  date: string;
-  startTime: string;
-  endTime: string;
   appointmentStatus: {
     id: string;
     name: 'scheduled' | 'completed' | 'cancelled' | 'confirmed'| 'no-show';
@@ -138,7 +135,21 @@ export interface Appointment {
   practician?: Omit<Practician, 'specialties'>;
   establishment?: Establishment;
   patient: Patient;
-  timeSlot: Omit<TimeSlot, 'establishment'|'practician'>;
+  timeslot: {
+    id: string;
+    startTime: string;
+    endTime: string;
+    date: string;
+    available: boolean;
+    practicianId?: string;
+    establishmentId?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    createdBy?: string;
+    updatedBy?: string;
+    deletedAt?: string;
+    deletedBy?: string;
+  };
   
   createdBy?: string
   updatedBy?: string
