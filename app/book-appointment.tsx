@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
     maxWidth: '48%',
   },
   timeSlotContent: {
-    //flex: 1,
+    flex: 1,
   },
   timeSlotHeader: {
     flexDirection: 'row',
