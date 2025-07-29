@@ -10,7 +10,7 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, MapPin, Star, Phone, Mail, Building2, Users, Clock } from 'lucide-react-native';
+import { ArrowLeft, MapPin, Star, Phone, Mail, Building2, Users, Clock, Calendar } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Establishment, Practician, TimeSlot, CreateAppointmentRequest } from '@/types/api';
 import { apiService } from '@/services/api';
@@ -291,6 +291,14 @@ export default function EstablishmentDetailScreen() {
             <Text style={styles.noSlotsText}>No available time slots for this date</Text>
           )}
         </View>
+
+        <TouchableOpacity
+          style={styles.bookAppointmentButton}
+          onPress={() => router.push(`/book-appointment?type=establishment&id=${establishment.id}`)}
+        >
+          <Calendar size={20} color="#FFFFFF" />
+          <Text style={styles.bookAppointmentButtonText}>Book Appointment</Text>
+        </TouchableOpacity>
       </ScrollView>
       
       {bookingLoading && (
@@ -301,13 +309,36 @@ export default function EstablishmentDetailScreen() {
       )}
     </SafeAreaView>
   );
-    <TouchableOpacity
-      style={styles.bookAppointmentButton}
-      onPress={() => router.push(`/book-appointment?type=establishment&id=${establishment.id}`)}
-    >
-      <Calendar size={20} color="#FFFFFF" />
-      <Text style={styles.bookAppointmentButtonText}>Book Appointment</Text>
-    </TouchableOpacity>
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  backButton: {
+    marginRight: 16,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -499,6 +530,53 @@ export default function EstablishmentDetailScreen() {
     fontSize: 16,
     color: '#3B82F6',
     fontWeight: '600',
+  },
+  availabilityCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  dateText: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 12,
+  },
+  timeSlotsLoading: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  timeSlotsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  timeSlot: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#EBF8FF',
+    borderWidth: 1,
+    borderColor: '#3B82F6',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  timeSlotText: {
+    fontSize: 14,
+    color: '#3B82F6',
+    fontWeight: '500',
+    marginLeft: 4,
+  },
+  noSlotsText: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    paddingVertical: 20,
   },
   bookAppointmentButton: {
     flexDirection: 'row',
