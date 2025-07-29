@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Star, Phone, Mail, Calendar, User } from 'lucide-react-native';
+import { ArrowLeft, Phone, Mail, Calendar, User } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Practician } from '@/types/api';
 import { apiService } from '@/services/api';
@@ -84,10 +84,6 @@ export default function DoctorDetailScreen() {
             <Text style={styles.specialty}>
               {doctor.specialties.map(s => s.name).join(', ')}
             </Text>
-            <View style={styles.ratingContainer}>
-              <Star size={16} color="#F59E0B" />
-              <Text style={styles.rating}>{t('search.notRated')}</Text>
-            </View>
           </View>
         </View>
 
@@ -109,8 +105,8 @@ export default function DoctorDetailScreen() {
             {t('doctorDetail.aboutDescription', {
               firstName: doctor.user.firstName,
               lastName: doctor.user.lastName,
-              specialties: doctor.specialties.map(s => s.name).join(', ')
-            })}
+              specialties: doctor.specialties.map(s => t(`specialties.${s.name}`, s.name)).join(', ')
+            {doctor.specialties.map(s => t(`specialties.${s.name}`, s.name)).join(', ')}
           </Text>
         </View>
       </ScrollView>
@@ -201,15 +197,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#3B82F6',
     marginBottom: 8,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  rating: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginLeft: 4,
   },
   contactCard: {
     backgroundColor: '#FFFFFF',

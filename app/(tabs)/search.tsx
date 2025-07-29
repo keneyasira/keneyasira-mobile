@@ -184,7 +184,7 @@ export default function SearchScreen() {
             Dr. {doctor.user.firstName} {doctor.user.lastName}
           </Text>
           <Text style={styles.specialty}>
-            {doctor.specialties.map(s => s.name).join(', ')}
+            {doctor.specialties.map(s => t(`specialties.${s.name}`, s.name)).join(', ')}
           </Text>
           <View style={styles.availabilityRow}>
             <Clock size={14} color={nextAvailableSlot ? "#10B981" : "#EF4444"} />
@@ -224,7 +224,7 @@ export default function SearchScreen() {
             <Text style={styles.location}>{establishment.city}</Text>
           </View>
           <Text style={styles.specialties}>
-            {establishment.specialties.map(s => s.name).join(', ')}
+            {establishment.specialties.map(s => t(`specialties.${s.name}`, s.name)).join(', ')}
           </Text>
           <View style={styles.availabilityRow}>
             <Clock size={14} color={nextAvailableSlot ? "#10B981" : "#EF4444"} />

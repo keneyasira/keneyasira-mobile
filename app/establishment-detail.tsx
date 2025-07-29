@@ -10,7 +10,7 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, MapPin, Star, Phone, Mail, Building2, Users, Calendar } from 'lucide-react-native';
+import { ArrowLeft, MapPin, Phone, Mail, Building2, Users, Calendar } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Establishment, Practician } from '@/types/api';
 import { apiService } from '@/services/api';
@@ -124,10 +124,6 @@ export default function EstablishmentDetailScreen() {
               <MapPin size={16} color="#6B7280" />
               <Text style={styles.location}>{establishment.city}</Text>
             </View>
-            <View style={styles.ratingContainer}>
-              <Star size={16} color="#F59E0B" />
-              <Text style={styles.rating}>{t('search.notRated')}</Text>
-            </View>
           </View>
         </View>
 
@@ -156,7 +152,7 @@ export default function EstablishmentDetailScreen() {
           <View style={styles.specialtiesContainer}>
             {establishment.specialties.map((specialty) => (
               <View key={specialty.id} style={styles.specialtyTag}>
-                <Text style={styles.specialtyText}>{specialty.name}</Text>
+                <Text style={styles.specialtyText}>{t(`specialties.${specialty.name}`, specialty.name)}</Text>
               </View>
             ))}
           </View>
@@ -202,7 +198,7 @@ export default function EstablishmentDetailScreen() {
               name: establishment.name,
               type: establishment.type.name.toLowerCase(),
               affiliation: establishment.affiliation.name,
-              specialties: establishment.specialties.map(s => s.name).join(', ')
+              specialties: establishment.specialties.map(s => t(`specialties.${s.name}`, s.name)).join(', ')
             })}
           </Text>
         </View>
@@ -302,15 +298,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   location: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginLeft: 4,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  rating: {
     fontSize: 14,
     color: '#6B7280',
     marginLeft: 4,
