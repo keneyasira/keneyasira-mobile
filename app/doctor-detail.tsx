@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingVertical: 10,
   },
   loadingContainer: {
     flex: 1,
@@ -432,9 +432,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#3B82F6',
-    marginHorizontal: 20,
-    marginBottom: 20,
+    margin: 20,
     paddingVertical: 16,
+    paddingHorizontal: 20,
     borderRadius: 12,
   },
   bookAppointmentButtonText: {
