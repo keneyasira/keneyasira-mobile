@@ -219,6 +219,14 @@ export default function DoctorDetailScreen() {
             excellent patient care and treatment.
           </Text>
         </View>
+
+        <TouchableOpacity
+          style={styles.bookAppointmentButton}
+          onPress={() => router.push(`/book-appointment?type=doctor&id=${doctor.id}`)}
+        >
+          <Calendar size={20} color="#FFFFFF" />
+          <Text style={styles.bookAppointmentButtonText}>Book Appointment</Text>
+        </TouchableOpacity>
       </ScrollView>
       
       {bookingLoading && (
@@ -229,13 +237,35 @@ export default function DoctorDetailScreen() {
       )}
     </SafeAreaView>
   );
-    <TouchableOpacity
-      style={styles.bookAppointmentButton}
-      onPress={() => router.push(`/book-appointment?type=doctor&id=${doctor.id}`)}
-    >
-      <Calendar size={20} color="#FFFFFF" />
-      <Text style={styles.bookAppointmentButtonText}>Book Appointment</Text>
-    </TouchableOpacity>
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  backButton: {
+    marginRight: 16,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
