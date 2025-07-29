@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { AlertTriangle, CheckCircle, XCircle, Info } from 'lucide-react-native';
+import { TriangleAlert as AlertTriangle, CircleCheck as CheckCircle, Circle as XCircle, Info } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 interface AlertButton {
