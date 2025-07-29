@@ -278,7 +278,7 @@ class ApiService {
   }
 
   async cancelAppointment(id: string): Promise<Appointment> {
-    const response: AxiosResponse<Appointment> = await this.axios.put(`/appointments/${id}/cancel`);
+    const response: AxiosResponse<Appointment> = await this.axios.post(`/appointments/${id}/cancel`);
     return response.data.data;
   }
 }
