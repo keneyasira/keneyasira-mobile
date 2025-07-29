@@ -88,6 +88,7 @@ export default function LanguageSelector({ showLabel = true, compact = false }: 
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
+              <View style={styles.modalHandle} />
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>{t('settings.selectLanguage')}</Text>
                 <TouchableOpacity
@@ -102,6 +103,7 @@ export default function LanguageSelector({ showLabel = true, compact = false }: 
                 renderItem={renderLanguageItem}
                 keyExtractor={(item) => item.code}
                 style={styles.languageList}
+                showsVerticalScrollIndicator={false}
               />
             </View>
           </View>
@@ -135,6 +137,7 @@ export default function LanguageSelector({ showLabel = true, compact = false }: 
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
+            <View style={styles.modalHandle} />
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{t('settings.selectLanguage')}</Text>
               <TouchableOpacity
@@ -149,6 +152,7 @@ export default function LanguageSelector({ showLabel = true, compact = false }: 
               renderItem={renderLanguageItem}
               keyExtractor={(item) => item.code}
               style={styles.languageList}
+              showsVerticalScrollIndicator={false}
             />
           </View>
         </View>
@@ -160,107 +164,139 @@ export default function LanguageSelector({ showLabel = true, compact = false }: 
 const styles = StyleSheet.create({
   selectorButton: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 20,
     marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowRadius: 2,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
   },
   selectorContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   selectorText: {
-    marginLeft: 12,
+    marginLeft: 16,
     flex: 1,
   },
   selectorLabel: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 2,
+    fontSize: 12,
+    color: '#9CA3AF',
+    marginBottom: 4,
+    textTransform: 'uppercase',
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
   selectorValue: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: '700',
     color: '#111827',
   },
   compactButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    backgroundColor: '#EBF8FF',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
   },
   compactButtonText: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
-    marginLeft: 6,
+    color: '#3B82F6',
+    marginLeft: 8,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'flex-end',
   },
   modalContent: {
     backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingTop: 20,
-    maxHeight: '50%',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 8,
+    maxHeight: '60%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  modalHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: 20,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingHorizontal: 24,
+    paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: '#F3F4F6',
   },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '700',
     color: '#111827',
   },
   closeButton: {
-    padding: 4,
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#F3F4F6',
   },
   closeButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#3B82F6',
-    fontWeight: '600',
+    fontWeight: '700',
   },
   languageList: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
   },
   languageItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    marginVertical: 2,
+    borderRadius: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: '#F9FAFB',
   },
   selectedLanguageItem: {
     backgroundColor: '#EBF8FF',
+    borderColor: '#BFDBFE',
+    borderWidth: 1,
+    borderBottomWidth: 1,
   },
   languageInfo: {
     flex: 1,
   },
   languageName: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: '700',
     color: '#111827',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   languageCode: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#6B7280',
+    textTransform: 'uppercase',
+    fontWeight: '500',
+    letterSpacing: 0.5,
   },
   selectedLanguageText: {
     color: '#3B82F6',

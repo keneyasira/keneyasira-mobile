@@ -31,7 +31,7 @@ export default function ProfileScreen() {
 
   const handleSave = async () => {
     try {
-      await updatePatient(formData);
+      await updatePatient(patient.id, formData);
       setIsEditing(false);
       Alert.alert(t('common.success'), t('profile.profileUpdated'));
     } catch (error) {
