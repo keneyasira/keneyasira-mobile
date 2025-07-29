@@ -70,7 +70,7 @@ export default function LoginScreen() {
 
           <View style={styles.form}>
             <View style={styles.inputContainer}>
-              <Phone size={20} color="#6B7280" />
+              <Phone size={20} color="#035AA6" />
               <TextInput
                 style={styles.input}
                 placeholder={t('auth.phoneNumberPlaceholder')}
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#035AA6',
     borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 24,

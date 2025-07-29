@@ -32,7 +32,7 @@ export default function SplashScreen() {
       <View style={styles.content}>
         <Text style={styles.title}>{t('splash.title')}</Text>
         <Text style={styles.subtitle}>{t('splash.subtitle')}</Text>
-        <ActivityIndicator size="large" color="#3B82F6" style={styles.loader} />
+        <ActivityIndicator size="large" color="#035AA6" style={styles.loader} />
       </View>
     </SafeAreaView>
   );
@@ -41,7 +41,7 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#035AA6',
   },
   content: {
     flex: 1,

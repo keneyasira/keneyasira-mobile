@@ -47,7 +47,7 @@ export default function DoctorDetailScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#3B82F6" />
+          <ActivityIndicator size="large" color="#035AA6" />
         </View>
       </SafeAreaView>
     );
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   },
   specialty: {
     fontSize: 16,
-    color: '#3B82F6',
+    color: '#035AA6',
     marginBottom: 8,
   },
   contactCard: {
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#035AA6',
     margin: 20,
     paddingVertical: 16,
     paddingHorizontal: 20,

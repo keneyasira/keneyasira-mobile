@@ -163,7 +163,7 @@ export default function VerifyOTPScreen() {
                 {resendLoading ? (
                   <ActivityIndicator size="small" color="#3B82F6" />
                 ) : (
-                  <Text style={styles.resendText}>{t('auth.resendCode')}</Text>
+                  <ActivityIndicator size="small" color="#035AA6" />
                 )}
               </TouchableOpacity>
             )}
@@ -230,14 +230,14 @@ const styles = StyleSheet.create({
     color: '#111827',
   },
   otpInputFilled: {
-    borderColor: '#3B82F6',
+    borderColor: '#035AA6',
     backgroundColor: '#EBF8FF',
   },
   verifyButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#035AA6',
     borderRadius: 16,
     paddingVertical: 16,
     marginBottom: 24,
@@ -261,6 +261,6 @@ const styles = StyleSheet.create({
   resendText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#3B82F6',
+    color: '#035AA6',
   },
 });

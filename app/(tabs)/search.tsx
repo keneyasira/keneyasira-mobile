@@ -256,9 +256,9 @@ export default function SearchScreen() {
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>
-            <Text style={styles.titleBlue}>{t('search.title').split(' ')[0]} </Text>
-            <Text style={styles.titleBlue}>
-              <Text style={styles.titleLightBlue}>{t('search.title').split(' ')[1]?.[0]}</Text>{t('search.title').split(' ')[1]?.slice(1)}
+            <Text style={styles.titleMainBlue}>{t('search.title').split(' ')[0]} </Text>
+            <Text style={styles.titleMainBlue}>
+              <Text style={styles.titleAccentBlue}>{t('search.title').split(' ')[1]?.[0]}</Text>{t('search.title').split(' ')[1]?.slice(1)}
             </Text>
           </Text>
         </View>
@@ -298,7 +298,7 @@ export default function SearchScreen() {
           <View style={styles.dropdownContainer}>
             {specialtiesLoading ? (
               <View style={styles.dropdownLoading}>
-                <ActivityIndicator size="small" color="#3B82F6" />
+                <ActivityIndicator size="small" color="#035AA6" />
               </View>
             ) : (
               <ScrollView style={styles.dropdownScroll} nestedScrollEnabled>
@@ -355,8 +355,8 @@ export default function SearchScreen() {
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                colors={['#3B82F6']}
-                tintColor="#3B82F6"
+                colors={['#035AA6']}
+                tintColor="#035AA6"
               />
             }
             ListEmptyComponent={
@@ -406,11 +406,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 0,
   },
-  titleBlue: {
-    color: '#3B82F6',
+  titleMainBlue: {
+    color: '#035AA6',
   },
-  titleLightBlue: {
-    color: '#93C5FD',
+  titleAccentBlue: {
+    color: '#38BDF2',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
   clearFilterButton: {
     marginLeft: 12,
     padding: 8,
-    backgroundColor: '#FEF2F2',
+    borderColor: '#035AA6',
     borderRadius: 8,
   },
   dropdownContainer: {
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
     color: '#374151',
   },
   dropdownItemTextSelected: {
-    color: '#3B82F6',
+    color: '#035AA6',
     fontWeight: '600',
   },
   content: {
@@ -530,7 +530,7 @@ const styles = StyleSheet.create({
   typeText: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#3B82F6',
+    color: '#035AA6',
     textTransform: 'uppercase',
   },
   doctorIcon: {
@@ -553,7 +553,7 @@ const styles = StyleSheet.create({
   },
   specialty: {
     fontSize: 14,
-    color: '#3B82F6',
+    color: '#035AA6',
     marginBottom: 4,
   },
   locationRow: {
@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
-  availability: {
+    color: '#035AA6',
     fontSize: 14,
     fontWeight: '500',
     marginLeft: 4,

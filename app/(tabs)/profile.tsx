@@ -92,9 +92,9 @@ export default function ProfileScreen() {
           }}
         >
           {isEditing ? (
-            <Save size={20} color="#3B82F6" />
+            <Save size={20} color="#035AA6" />
           ) : (
-            <Edit size={20} color="#3B82F6" />
+            <Edit size={20} color="#035AA6" />
           )}
         </TouchableOpacity>
       </View>

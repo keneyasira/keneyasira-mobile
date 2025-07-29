@@ -110,7 +110,7 @@ export default function AppointmentsScreen() {
     switch (status) {
       case 'scheduled':
       case 'confirmed':
-        return '#3B82F6';
+        return '#035AA6';
       case 'completed':
         return '#10B981';
       case 'cancelled':
@@ -127,7 +127,7 @@ export default function AppointmentsScreen() {
       <View style={styles.appointmentHeader}>
         <View style={styles.dateTimeContainer}>
           <View style={styles.dateContainer}>
-            <Calendar size={16} color="#3B82F6" />
+            <Calendar size={16} color="#035AA6" />
             <Text style={styles.dateText}>{formatDate(appointment.timeslot.date)}</Text>
           </View>
           <View style={styles.timeContainer}>
@@ -230,7 +230,7 @@ export default function AppointmentsScreen() {
 
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#3B82F6" />
+          <ActivityIndicator size="large" color="#035AA6" />
         </View>
       ) : (
         <FlatList
