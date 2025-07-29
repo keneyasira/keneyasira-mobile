@@ -439,8 +439,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginBottom: 8,
-    minWidth: '45%',
-    maxWidth: '48%',
+    flex: 1,
+    marginHorizontal: 4,
   },
   timeSlotContent: {
     flex: 1,
@@ -457,10 +457,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   timeSlotProvider: {
-    
     fontSize: 12,
     color: '#6B7280',
     fontStyle: 'italic',
+    flexWrap: 'wrap',
+    lineHeight: 16,
   },
   noSlotsText: {
     fontSize: 14,
