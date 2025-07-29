@@ -298,7 +298,7 @@ export default function BookAppointmentScreen() {
                             )}
                             {type === 'establishment' && slot.practician && (
                               <Text style={styles.timeSlotProvider}>
-                                with Dr. {slot.practician.user.firstName} {slot.practician.user.lastName}
+                                with Dr. {slot.practician.user.firstName} TEst {slot.practician.user.lastName}
                               </Text>
                             )}
                           </View>
