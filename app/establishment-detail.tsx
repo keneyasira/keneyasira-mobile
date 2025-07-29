@@ -45,9 +45,8 @@ export default function EstablishmentDetailScreen() {
   const loadEstablishmentDetails = async () => {
     try {
       setLoading(true);
-      const response = await apiService.getEstablishmentById(id);
-      console.log(response);
-      setEstablishment(response.data);
+      const data = await apiService.getEstablishmentById(id);
+      setEstablishment(data);
     } catch (error) {
       Alert.alert('Error', 'Failed to load establishment details');
       router.back();
@@ -62,6 +61,7 @@ export default function EstablishmentDetailScreen() {
     try {
       setPracticiansLoading(true);
       const response = await apiService.getEstablishmentPracticians(establishment.id);
+      console.log(response);
       setPracticians(response.data);
     } catch (error) {
       console.error('Failed to load practicians:', error);
