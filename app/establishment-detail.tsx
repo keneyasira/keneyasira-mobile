@@ -118,7 +118,7 @@ export default function EstablishmentDetailScreen() {
           <View style={styles.profileInfo}>
             <Text style={styles.establishmentName}>{establishment.name}</Text>
             <Text style={styles.establishmentType}>
-              {establishment.type.name} • {establishment.affiliation.name}
+              {t(`establishmentTypes.${establishment.type.name}`, establishment.type.name)} • {t(`establishmentAffiliations.${establishment.affiliation.name}`, establishment.affiliation.name)}
             </Text>
             <View style={styles.locationContainer}>
               <MapPin size={16} color="#6B7280" />
@@ -196,8 +196,8 @@ export default function EstablishmentDetailScreen() {
           <Text style={styles.aboutText}>
             {t('establishmentDetail.aboutDescription', {
               name: establishment.name,
-              type: establishment.type.name.toLowerCase(),
-              affiliation: establishment.affiliation.name,
+              type: t(`establishmentTypes.${establishment.type.name}`, establishment.type.name).toLowerCase(),
+              affiliation: t(`establishmentAffiliations.${establishment.affiliation.name}`, establishment.affiliation.name),
               specialties: establishment.specialties.map(s => t(`specialties.${s.name}`, s.name)).join(', ')
             })}
           </Text>

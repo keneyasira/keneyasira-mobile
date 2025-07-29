@@ -236,7 +236,7 @@ export default function SearchScreen() {
             </Text>
           </View>
           <Text style={styles.establishmentType}>
-            {establishment.type.name} • {establishment.affiliation.name}
+            {t(`establishmentTypes.${establishment.type.name}`, establishment.type.name)} • {t(`establishmentAffiliations.${establishment.affiliation.name}`, establishment.affiliation.name)}
           </Text>
         </View>
       </View>

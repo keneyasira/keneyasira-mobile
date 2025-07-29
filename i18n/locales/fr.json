@@ -198,5 +198,20 @@
     "Radiology": "Radiologie",
     "Surgery": "Chirurgie",
     "Urology": "Urologie"
+  },
+  "establishmentTypes": {
+    "Hospital": "Hôpital",
+    "Clinic": "Clinique",
+    "Medical Center": "Centre Médical",
+    "Pharmacy": "Pharmacie",
+    "Laboratory": "Laboratoire",
+    "Radiology Center": "Centre de Radiologie"
+  },
+  "establishmentAffiliations": {
+    "Public": "Public",
+    "Private": "Privé",
+    "Non-profit": "Sans but lucratif",
+    "University": "Universitaire",
+    "Government": "Gouvernemental"
   }
 }
