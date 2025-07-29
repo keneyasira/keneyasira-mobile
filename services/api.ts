@@ -21,6 +21,11 @@ const API_BASE_URL = 'http://192.168.1.98:4000'; // Replace with actual API URL
 
 class ApiService {
   private axios;
+  private isRefreshing = false;
+  private failedQueue: Array<{
+    resolve: (value?: any) => void;
+    reject: (error?: any) => void;
+  }> = [];
 
   constructor() {
     this.axios = axios.create({
@@ -45,14 +50,92 @@ class ApiService {
       (response) => response,
       async (error) => {
         if (error.response?.status === 401) {
-          await AsyncStorage.removeItem('authToken');
-          await AsyncStorage.removeItem('currentPatient');
+
+        // If error is 401 and we haven't already tried to refresh
+          if (!originalRequest._retry) {
+            if (this.isRefreshing) {
+              // If already refreshing, queue this request
+              return new Promise((resolve, reject) => {
+                this.failedQueue.push({ resolve, reject });
+              }).then(() => {
+                return this.axios(originalRequest);
+              }).catch(err => {
+                return Promise.reject(err);
+              });
+            }
+
+            originalRequest._retry = true;
+            this.isRefreshing = true;
+
+            try {
+              const refreshToken = await AsyncStorage.getItem('refreshToken');
+              if (refreshToken) {
+                const response = await this.refreshAccessToken(refreshToken);
+                const newAccessToken = response.data.access_token;
+                
+                // Update stored tokens
+                await AsyncStorage.setItem('authToken', newAccessToken);
+                if (response.data.refresh_token) {
+                  await AsyncStorage.setItem('refreshToken', response.data.refresh_token);
+                }
+
+                // Process failed queue
+                this.processQueue(null);
+
+                // Retry original request with new token
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                return this.axios(originalRequest);
+              } else {
+                // No refresh token available, logout user
+                await this.clearAuthData();
+                this.processQueue(new Error('No refresh token available'));
+              }
+            } catch (refreshError) {
+              // Refresh failed, logout user
+              await this.clearAuthData();
+              this.processQueue(refreshError);
+              return Promise.reject(refreshError);
+            } finally {
+              this.isRefreshing = false;
+            }
+          }
         }
         return Promise.reject(error);
       }
     );
   }
 
+  private async refreshAccessToken(refreshToken: string): Promise<AuthResponse> {
+    // Create a new axios instance without interceptors to avoid infinite loops
+    const refreshAxios = axios.create({
+      baseURL: API_BASE_URL,
+      timeout: 10000,
+    });
+
+    const response: AxiosResponse<AuthResponse> = await refreshAxios.post('/authentication/refresh-token', {
+      refresh_token: refreshToken,
+    });
+
+    return response.data;
+  }
+
+  private processQueue(error: any) {
+    this.failedQueue.forEach(({ resolve, reject }) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+    
+    this.failedQueue = [];
+  }
+
+  private async clearAuthData(): Promise<void> {
+    await AsyncStorage.removeItem('authToken');
+    await AsyncStorage.removeItem('refreshToken');
+    await AsyncStorage.removeItem('currentPatient');
+  }
   // Authentication
   async requestOTP(phone: string): Promise<void> {
     await this.axios.post('/authentication/login', { 
@@ -73,6 +156,7 @@ class ApiService {
     
     // Store token and patient data
     await AsyncStorage.setItem('authToken', data.access_token);
+    await AsyncStorage.setItem('refreshToken', data.refresh_token);
     // decode the token to get the patient id
     const decodedToken = jwtDecode<UserModel>(data.access_token);
     const patientId = decodedToken.infos.patient?.id;
@@ -84,8 +168,7 @@ class ApiService {
 
 
   async logout(): Promise<void> {
-    await AsyncStorage.removeItem('authToken');
-    await AsyncStorage.removeItem('currentPatient');
+    await this.clearAuthData();
   }
 
   // Patient
