@@ -202,10 +202,6 @@ export default function SearchScreen() {
               }
             </Text>
           </View>
-          <View style={styles.ratingRow}>
-            <Star size={14} color="#F59E0B" />
-            <Text style={styles.rating}>{t('search.notRated')}</Text>
-          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -245,10 +241,6 @@ export default function SearchScreen() {
                 : t('search.noSlotsAvailable')
               }
             </Text>
-          </View>
-          <View style={styles.ratingRow}>
-            <Star size={14} color="#F59E0B" />
-            <Text style={styles.rating}>{t('search.notRated')}</Text>
           </View>
           <Text style={styles.establishmentType}>
             {establishment.type.name} • {establishment.affiliation.name}
@@ -596,11 +588,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     marginLeft: 4,
-  },
-  fee: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#10B981',
   },
   cardDisabled: {
     opacity: 0.6,
