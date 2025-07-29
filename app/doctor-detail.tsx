@@ -229,35 +229,13 @@ export default function DoctorDetailScreen() {
       )}
     </SafeAreaView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  backButton: {
-    padding: 8,
-    marginRight: 12,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
+    <TouchableOpacity
+      style={styles.bookAppointmentButton}
+      onPress={() => router.push(`/book-appointment?type=doctor&id=${doctor.id}`)}
+    >
+      <Calendar size={20} color="#FFFFFF" />
+      <Text style={styles.bookAppointmentButtonText}>Book Appointment</Text>
+    </TouchableOpacity>
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -403,6 +381,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#374151',
     lineHeight: 24,
+  },
+  bookAppointmentButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#3B82F6',
+    borderRadius: 16,
+    paddingVertical: 16,
+    marginBottom: 16,
+  },
+  bookAppointmentButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginLeft: 8,
   },
   bookingOverlay: {
     position: 'absolute',

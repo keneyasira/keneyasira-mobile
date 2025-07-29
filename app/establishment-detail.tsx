@@ -301,36 +301,13 @@ export default function EstablishmentDetailScreen() {
       )}
     </SafeAreaView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  backButton: {
-    padding: 8,
-    marginRight: 12,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  loadingContainer: {
+    <TouchableOpacity
+      style={styles.bookAppointmentButton}
+      onPress={() => router.push(`/book-appointment?type=establishment&id=${establishment.id}`)}
+    >
+      <Calendar size={20} color="#FFFFFF" />
+      <Text style={styles.bookAppointmentButtonText}>Book Appointment</Text>
+    </TouchableOpacity>
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -523,53 +500,20 @@ const styles = StyleSheet.create({
     color: '#3B82F6',
     fontWeight: '600',
   },
-  availabilityCard: {
-    backgroundColor: '#FFFFFF',
+  bookAppointmentButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#3B82F6',
     borderRadius: 16,
-    padding: 20,
+    paddingVertical: 16,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
-  dateText: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 16,
-  },
-  timeSlotsLoading: {
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
-  timeSlotsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  timeSlot: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#EBF8FF',
-    borderWidth: 1,
-    borderColor: '#3B82F6',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 8,
-  },
-  timeSlotText: {
-    fontSize: 14,
-    color: '#3B82F6',
-    marginLeft: 6,
-    fontWeight: '500',
-  },
-  noSlotsText: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    paddingVertical: 20,
+  bookAppointmentButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginLeft: 8,
   },
   bookingOverlay: {
     position: 'absolute',
