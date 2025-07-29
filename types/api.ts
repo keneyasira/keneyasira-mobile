@@ -135,7 +135,7 @@ export interface Appointment {
     name: 'scheduled' | 'completed' | 'cancelled' | 'confirmed'| 'no-show';
   };
   appointmentStatusId: string;
-  practician?: Omit<Practician, 'specialties'>;
+  practician?: Practician;
   establishment?: Establishment;
   patient: Patient;
   timeSlot: TimeSlot;
