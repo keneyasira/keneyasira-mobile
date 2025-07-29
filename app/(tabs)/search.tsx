@@ -17,6 +17,7 @@ import { Search, MapPin, Star, Building2, ChevronDown, X, Clock } from 'lucide-r
 import { useRouter } from 'expo-router';
 import { Practician, Establishment, TimeSlot } from '@/types/api';
 import { apiService } from '@/services/api';
+import { useTranslation } from 'react-i18next';
 
 interface Specialty {
   id: string;
@@ -30,6 +31,7 @@ interface SearchResult {
 }
 
 export default function SearchScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState<Specialty | null>(null);
@@ -179,7 +181,7 @@ export default function SearchScreen() {
         />
         <View style={styles.doctorInfo}>
           <View style={styles.typeIndicator}>
-            <Text style={styles.typeText}>Doctor</Text>
+            <Text style={styles.typeText}>{t('search.doctor')}</Text>
           </View>
           <Text style={styles.doctorName}>
             Dr. {doctor.user.firstName} {doctor.user.lastName}
@@ -189,20 +191,20 @@ export default function SearchScreen() {
           </Text>
           <View style={styles.locationRow}>
             <MapPin size={14} color="#6B7280" />
-            <Text style={styles.location}>Location not available</Text>
+            <Text style={styles.location}>{t('search.locationNotAvailable')}</Text>
           </View>
           <View style={styles.availabilityRow}>
             <Clock size={14} color={nextAvailableSlot ? "#10B981" : "#EF4444"} />
             <Text style={[styles.availability, { color: nextAvailableSlot ? "#10B981" : "#EF4444" }]}>
               {nextAvailableSlot 
-                ? `Next: ${formatTime(nextAvailableSlot.startTime)}`
-                : 'No slots available'
+                ? t('search.nextAvailable', { time: formatTime(nextAvailableSlot.startTime) })
+                : t('search.noSlotsAvailable')
               }
             </Text>
           </View>
           <View style={styles.ratingRow}>
             <Star size={14} color="#F59E0B" />
-            <Text style={styles.rating}>Not rated</Text>
+            <Text style={styles.rating}>{t('search.notRated')}</Text>
           </View>
         </View>
       </View>
@@ -225,7 +227,7 @@ export default function SearchScreen() {
         </View>
         <View style={styles.establishmentInfo}>
           <View style={styles.typeIndicator}>
-            <Text style={styles.typeText}>Establishment</Text>
+            <Text style={styles.typeText}>{t('search.establishment')}</Text>
           </View>
           <Text style={styles.establishmentName}>{establishment.name}</Text>
           <View style={styles.locationRow}>
@@ -239,14 +241,14 @@ export default function SearchScreen() {
             <Clock size={14} color={nextAvailableSlot ? "#10B981" : "#EF4444"} />
             <Text style={[styles.availability, { color: nextAvailableSlot ? "#10B981" : "#EF4444" }]}>
               {nextAvailableSlot 
-                ? `Next: ${formatTime(nextAvailableSlot.startTime)}`
-                : 'No slots available'
+                ? t('search.nextAvailable', { time: formatTime(nextAvailableSlot.startTime) })
+                : t('search.noSlotsAvailable')
               }
             </Text>
           </View>
           <View style={styles.ratingRow}>
             <Star size={14} color="#F59E0B" />
-            <Text style={styles.rating}>Not rated</Text>
+            <Text style={styles.rating}>{t('search.notRated')}</Text>
           </View>
           <Text style={styles.establishmentType}>
             {establishment.type.name} • {establishment.affiliation.name}
@@ -269,9 +271,9 @@ export default function SearchScreen() {
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>
-            <Text style={styles.titleBlue}>KENEYA </Text>
+            <Text style={styles.titleBlue}>{t('search.title').split(' ')[0]} </Text>
             <Text style={styles.titleBlue}>
-              <Text style={styles.titleLightBlue}>S</Text>IRA
+              <Text style={styles.titleLightBlue}>{t('search.title').split(' ')[1]?.[0]}</Text>{t('search.title').split(' ')[1]?.slice(1)}
             </Text>
           </Text>
         </View>
@@ -280,7 +282,7 @@ export default function SearchScreen() {
           <Search size={20} color="#9CA3AF" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search doctors or establishments..."
+            placeholder={t('search.searchPlaceholder')}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -292,7 +294,7 @@ export default function SearchScreen() {
             onPress={() => setShowSpecialtyDropdown(!showSpecialtyDropdown)}
           >
             <Text style={styles.specialtyDropdownText}>
-              {selectedSpecialty ? selectedSpecialty.name : 'All Specialties'}
+              {selectedSpecialty ? selectedSpecialty.name : t('search.allSpecialties')}
             </Text>
             <ChevronDown size={20} color="#6B7280" />
           </TouchableOpacity>
@@ -326,7 +328,7 @@ export default function SearchScreen() {
                     styles.dropdownItemText,
                     !selectedSpecialty && styles.dropdownItemTextSelected
                   ]}>
-                    All Specialties
+                    {t('search.allSpecialties')}
                   </Text>
                 </TouchableOpacity>
                 {specialties.map((specialty) => (
@@ -376,17 +378,17 @@ export default function SearchScreen() {
               searchQuery.length >= 2 || selectedSpecialty ? (
                 <View style={styles.emptyContainer}>
                   <Search size={64} color="#D1D5DB" />
-                  <Text style={styles.emptyTitle}>No results found</Text>
+                  <Text style={styles.emptyTitle}>{t('search.noResults')}</Text>
                   <Text style={styles.emptyText}>
-                    Try adjusting your search terms or filters
+                    {t('search.noResultsDescription')}
                   </Text>
                 </View>
               ) : (
                 <View style={styles.emptyContainer}>
                   <Search size={64} color="#D1D5DB" />
-                  <Text style={styles.emptyTitle}>Start searching</Text>
+                  <Text style={styles.emptyTitle}>{t('search.startSearching')}</Text>
                   <Text style={styles.emptyText}>
-                    Enter at least 2 characters or select a specialty to search
+                    {t('search.startSearchingDescription')}
                   </Text>
                 </View>
               )

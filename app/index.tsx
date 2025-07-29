@@ -3,8 +3,10 @@ import { View, Text, StyleSheet, ActivityIndicator, Linking } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useSegments } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function SplashScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const segments = useSegments();
   const { patient, isLoading } = useAuth();
@@ -28,8 +30,8 @@ export default function SplashScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>HealthCare</Text>
-        <Text style={styles.subtitle}>Your Health, Our Priority</Text>
+        <Text style={styles.title}>{t('splash.title')}</Text>
+        <Text style={styles.subtitle}>{t('splash.subtitle')}</Text>
         <ActivityIndicator size="large" color="#3B82F6" style={styles.loader} />
       </View>
     </SafeAreaView>
