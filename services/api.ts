@@ -212,7 +212,6 @@ class ApiService {
     const response: AxiosResponse<TimeSlot[]> = await this.axios.get(`/practicians/${practicianId}/time-slots`, {
       params: { 
         startDate: date,
-        endDate: date,
         sort: ['startTime:ASC']
       },
     });
@@ -238,7 +237,7 @@ class ApiService {
         page: 1,
         limit: 50,
         sort: ['startTime:ASC'],
-        date 
+        startDate: date 
       },
     });
     return response.data.data || [];
