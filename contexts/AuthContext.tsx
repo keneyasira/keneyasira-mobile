@@ -37,7 +37,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       const currentPatient = await apiService.getCurrentPatient();
-      console.log('currentPatient', currentPatient);
       setPatient(currentPatient);
     } catch (error) {
       console.error('Auth check failed:', error);
