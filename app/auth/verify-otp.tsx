@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { apiService } from '@/services/api';
 import CustomAlert from '@/components/CustomAlert';
 import { useCustomAlert } from '@/hooks/useCustomAlert';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function VerifyOTPScreen() {
   const { t } = useTranslation();
@@ -32,9 +33,15 @@ export default function VerifyOTPScreen() {
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [countdown, setCountdown] = useState(60);
+  const [resendAttempts, setResendAttempts] = useState(0);
+  const [isBlocked, setIsBlocked] = useState(false);
   
   const { alertState, showAlert, hideAlert } = useCustomAlert();
   const inputRefs = useRef<TextInput[]>([]);
+
+  useEffect(() => {
+    checkResendStatus();
+  }, []);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -43,6 +50,53 @@ export default function VerifyOTPScreen() {
     }
   }, [countdown]);
 
+  const checkResendStatus = async () => {
+    try {
+      const lastResendTime = await AsyncStorage.getItem(`lastResend_${phone}`);
+      const attempts = await AsyncStorage.getItem(`resendAttempts_${phone}`);
+      
+      if (lastResendTime && attempts) {
+        const timeSinceLastResend = Date.now() - parseInt(lastResendTime);
+        const attemptCount = parseInt(attempts);
+        
+        // Reset attempts if last resend was more than 1 hour ago
+        if (timeSinceLastResend > 60 * 60 * 1000) {
+          await AsyncStorage.removeItem(`resendAttempts_${phone}`);
+          await AsyncStorage.removeItem(`lastResend_${phone}`);
+          setResendAttempts(0);
+        } else {
+          setResendAttempts(attemptCount);
+          
+          // Block if too many attempts
+          if (attemptCount >= 5) {
+            const remainingBlockTime = (60 * 60 * 1000) - timeSinceLastResend;
+            if (remainingBlockTime > 0) {
+              setIsBlocked(true);
+              setCountdown(Math.ceil(remainingBlockTime / 1000));
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error checking resend status:', error);
+    }
+  };
+
+  const updateResendAttempts = async () => {
+    try {
+      const newAttempts = resendAttempts + 1;
+      await AsyncStorage.setItem(`resendAttempts_${phone}`, newAttempts.toString());
+      await AsyncStorage.setItem(`lastResend_${phone}`, Date.now().toString());
+      setResendAttempts(newAttempts);
+      
+      if (newAttempts >= 5) {
+        setIsBlocked(true);
+        setCountdown(60 * 60); // 1 hour block
+      }
+    } catch (error) {
+      console.error('Error updating resend attempts:', error);
+    }
+  };
   const handleOTPChange = (value: string, index: number) => {
     const newOtp = [...otp];
     newOtp[index] = value;
@@ -77,6 +131,11 @@ export default function VerifyOTPScreen() {
       // Handle both signup and login flows the same way
       // Account creation already happened in signup flow
       await loginWithOTP(phone, otpString);
+      
+      // Clear resend attempts on successful verification
+      await AsyncStorage.removeItem(`resendAttempts_${phone}`);
+      await AsyncStorage.removeItem(`lastResend_${phone}`);
+      
       router.replace('/(tabs)/search');
     } catch (error) {
       showAlert({
@@ -93,9 +152,27 @@ export default function VerifyOTPScreen() {
   };
 
   const handleResendOTP = async () => {
+    if (isBlocked) {
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.resendBlocked'),
+        type: 'warning',
+      });
+      return;
+    }
+
+    if (resendAttempts >= 3) {
+      showAlert({
+        title: t('common.warning'),
+        message: t('auth.resendLimitWarning', { remaining: 5 - resendAttempts }),
+        type: 'warning',
+      });
+    }
+
     try {
       setResendLoading(true);
       await requestOTP(phone);
+      await updateResendAttempts();
       setCountdown(60);
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
@@ -115,6 +192,19 @@ export default function VerifyOTPScreen() {
     }
   };
 
+  const formatBlockTime = () => {
+    const hours = Math.floor(countdown / 3600);
+    const minutes = Math.floor((countdown % 3600) / 60);
+    const seconds = countdown % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${seconds}s`;
+    } else {
+      return `${seconds}s`;
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -177,7 +267,11 @@ export default function VerifyOTPScreen() {
           </TouchableOpacity>
 
           <View style={styles.resendContainer}>
-            {countdown > 0 ? (
+            {isBlocked ? (
+              <Text style={styles.blockedText}>
+                {t('auth.resendBlockedTime', { time: formatBlockTime() })}
+              </Text>
+            ) : countdown > 0 ? (
               <Text style={styles.countdownText}>
                 {t('auth.resendCodeIn', { seconds: countdown })}
               </Text>
@@ -192,6 +286,12 @@ export default function VerifyOTPScreen() {
                   <ActivityIndicator size="small" color="#035AA6" />
                 )}
               </TouchableOpacity>
+            )}
+            
+            {resendAttempts > 0 && !isBlocked && (
+              <Text style={styles.attemptWarning}>
+                {t('auth.resendAttempts', { attempts: resendAttempts, max: 5 })}
+              </Text>
             )}
           </View>
         </View>
@@ -297,5 +397,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#035AA6',
+  },
+  blockedText: {
+    fontSize: 14,
+    color: '#EF4444',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  attemptWarning: {
+    fontSize: 12,
+    color: '#F59E0B',
+    textAlign: 'center',
+    marginTop: 8,
   },
 });

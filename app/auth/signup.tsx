@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 
 import CustomAlert from '@/components/CustomAlert';
 import { useCustomAlert } from '@/hooks/useCustomAlert';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function SignupScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -29,9 +30,83 @@ export default function SignupScreen() {
     birthDate: '',
   });
   const [loading, setLoading] = useState(false);
+  const [cooldownTime, setCooldownTime] = useState(0);
   const { alertState, showAlert, hideAlert } = useCustomAlert();
 
+  // Check cooldown status on component mount
+  React.useEffect(() => {
+    checkCooldownStatus();
+  }, []);
+
+  // Countdown timer
+  React.useEffect(() => {
+    if (cooldownTime > 0) {
+      const timer = setTimeout(() => setCooldownTime(cooldownTime - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldownTime]);
+
+  const checkCooldownStatus = async () => {
+    try {
+      const lastOtpTime = await AsyncStorage.getItem('lastOtpRequest');
+      const attemptCount = await AsyncStorage.getItem('otpAttemptCount');
+      
+      if (lastOtpTime && attemptCount) {
+        const timeSinceLastRequest = Date.now() - parseInt(lastOtpTime);
+        const attempts = parseInt(attemptCount);
+        
+        // Progressive cooldown: 1 min, 5 min, 15 min, 30 min
+        const cooldownPeriods = [60, 300, 900, 1800]; // in seconds
+        const cooldownIndex = Math.min(attempts - 3, cooldownPeriods.length - 1);
+        
+        if (attempts >= 3 && cooldownIndex >= 0) {
+          const requiredCooldown = cooldownPeriods[cooldownIndex] * 1000; // convert to ms
+          
+          if (timeSinceLastRequest < requiredCooldown) {
+            const remainingTime = Math.ceil((requiredCooldown - timeSinceLastRequest) / 1000);
+            setCooldownTime(remainingTime);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error checking cooldown status:', error);
+    }
+  };
+
+  const updateOtpAttempts = async () => {
+    try {
+      const now = Date.now().toString();
+      const currentAttempts = await AsyncStorage.getItem('otpAttemptCount');
+      const lastAttemptTime = await AsyncStorage.getItem('lastOtpRequest');
+      
+      // Reset counter if last attempt was more than 1 hour ago
+      const oneHourAgo = Date.now() - (60 * 60 * 1000);
+      if (lastAttemptTime && parseInt(lastAttemptTime) < oneHourAgo) {
+        await AsyncStorage.setItem('otpAttemptCount', '1');
+      } else {
+        const newCount = currentAttempts ? (parseInt(currentAttempts) + 1).toString() : '1';
+        await AsyncStorage.setItem('otpAttemptCount', newCount);
+      }
+      
+      await AsyncStorage.setItem('lastOtpRequest', now);
+    } catch (error) {
+      console.error('Error updating OTP attempts:', error);
+    }
+  };
   const validateForm = () => {
+    if (cooldownTime > 0) {
+      const minutes = Math.floor(cooldownTime / 60);
+      const seconds = cooldownTime % 60;
+      const timeString = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+      
+      showAlert({
+        title: t('common.error'),
+        message: t('auth.otpCooldown', { time: timeString }),
+        type: 'warning',
+      });
+      return false;
+    }
+
     if (!formData.firstName.trim()) {
       showAlert({
         title: t('common.error'),
@@ -123,6 +198,7 @@ export default function SignupScreen() {
       // Then send OTP for login verification
       await apiService.requestOTP(formData.phone);
       
+      await updateOtpAttempts();
       // Navigate to OTP verification
       router.push(`/auth/verify-otp?phone=${encodeURIComponent(formData.phone)}&signup=true`);
     } catch (error) {
@@ -264,6 +340,9 @@ export default function SignupScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
       
+      // Set initial cooldown
+      setCooldownTime(60);
+      
       <CustomAlert
         visible={alertState.visible}
         title={alertState.title}
@@ -326,12 +405,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     marginBottom: 16,
-  },
+              style={[styles.button, (loading || cooldownTime > 0) && styles.buttonDisabled]}
   input: {
-    flex: 1,
+              disabled={loading || cooldownTime > 0}
     fontSize: 16,
+            {cooldownTime > 0 && (
+              <Text style={styles.cooldownWarning}>
+                {t('auth.otpRateLimit')}
+              </Text>
+            )}
     color: '#111827',
     marginLeft: 12,
+              ) : cooldownTime > 0 ? (
+                <Text style={styles.buttonText}>
+                  {t('auth.waitBeforeRetry', { 
+                    time: cooldownTime > 60 
+                      ? `${Math.floor(cooldownTime / 60)}m ${cooldownTime % 60}s`
+                      : `${cooldownTime}s`
+                  })}
+                </Text>
   },
   button: {
     flexDirection: 'row',
@@ -357,6 +449,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 40,
+  },
+  cooldownWarning: {
+    fontSize: 12,
+    color: '#F59E0B',
+    textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: '500',
   },
   footerText: {
     fontSize: 14,
