@@ -135,7 +135,6 @@ export default function SearchScreen() {
             <Text style={styles.rating}>Not rated</Text>
           </View>
         </View>
-        <Text style={styles.fee}>Contact for pricing</Text>
       </View>
     </TouchableOpacity>
   );
