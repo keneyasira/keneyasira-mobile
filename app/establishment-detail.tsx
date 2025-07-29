@@ -456,10 +456,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#3B82F6',
-    borderRadius: 16,
+    margin: 20,
     paddingVertical: 16,
     paddingHorizontal: 20,
-    marginBottom: 20,
+    borderRadius: 12,
   },
   bookAppointmentButtonText: {
     fontSize: 16,
