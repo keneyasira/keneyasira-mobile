@@ -7,12 +7,11 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
-  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, MapPin, Star, Phone, Mail, Calendar, Clock } from 'lucide-react-native';
+import { ArrowLeft, Star, Phone, Mail, Calendar, User } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Practician, TimeSlot, CreateAppointmentRequest } from '@/types/api';
+import { Practician } from '@/types/api';
 import { apiService } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -23,23 +22,13 @@ export default function DoctorDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { patient } = useAuth();
   const [doctor, setDoctor] = useState<Practician | null>(null);
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
-  const [timeSlotsLoading, setTimeSlotsLoading] = useState(false);
-  const [bookingLoading, setBookingLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
   useEffect(() => {
     if (id) {
       loadDoctorDetails();
     }
   }, [id]);
-
-  useEffect(() => {
-    if (doctor) {
-      loadTimeSlots();
-    }
-  }, [doctor, selectedDate]);
 
   const loadDoctorDetails = async () => {
     try {
@@ -52,67 +41,6 @@ export default function DoctorDetailScreen() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const loadTimeSlots = async () => {
-    if (!doctor) return;
-
-    try {
-      setTimeSlotsLoading(true);
-      const data = await apiService.getPracticianTimeSlots(doctor.id, selectedDate);
-      setTimeSlots(data);
-    } catch (error) {
-      console.error('Failed to load time slots:', error);
-      setTimeSlots([]);
-    } finally {
-      setTimeSlotsLoading(false);
-    }
-  };
-
-  const formatTime = (timeString: string) => {
-    const time = new Date(`2000-01-01T${timeString}`);
-    return time.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
-  };
-
-  const handleBookAppointment = async (timeSlot: TimeSlot) => {
-    if (!patient) {
-      Alert.alert(t('common.error'), t('doctorDetail.loginRequired'));
-      return;
-    }
-
-    Alert.alert(
-      t('doctorDetail.bookAppointment'),
-      t('doctorDetail.bookingConfirmation', { time: formatTime(timeSlot.startTime) }),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('bookAppointment.book'),
-          onPress: async () => {
-            try {
-              setBookingLoading(true);
-              const appointmentRequest: CreateAppointmentRequest = {
-                patientId: patient.id,
-                timeSlotId: timeSlot.id,
-              };
-              
-              await apiService.createAppointment(appointmentRequest);
-              Alert.alert(t('common.success'), t('doctorDetail.bookingSuccess'));
-              
-              // Refresh time slots to show updated availability
-              await loadTimeSlots();
-            } catch (error) {
-              Alert.alert(t('common.error'), t('doctorDetail.bookingFailed'));
-            } finally {
-              setBookingLoading(false);
-            }
-          },
-        },
-      ]
-    );
   };
 
   if (loading) {
@@ -146,12 +74,9 @@ export default function DoctorDetailScreen() {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.profileCard}>
-          <Image
-            source={{
-              uri: 'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=300',
-            }}
-            style={styles.profileImage}
-          />
+          <View style={styles.profileIcon}>
+            <User size={40} color="#3B82F6" />
+          </View>
           <View style={styles.profileInfo}>
             <Text style={styles.doctorName}>
               Dr. {doctor.user.firstName} {doctor.user.lastName}
@@ -178,36 +103,6 @@ export default function DoctorDetailScreen() {
           </View>
         </View>
 
-        <View style={styles.availabilityCard}>
-          <Text style={styles.sectionTitle}>{t('doctorDetail.availableTimeSlots')}</Text>
-          <Text style={styles.dateText}>{t('doctorDetail.date', { date: selectedDate })}</Text>
-          
-          {timeSlotsLoading ? (
-            <View style={styles.timeSlotsLoading}>
-              <ActivityIndicator size="small" color="#3B82F6" />
-            </View>
-          ) : timeSlots.length > 0 ? (
-            <View style={styles.timeSlotsContainer}>
-              {timeSlots
-                .filter(slot => slot.isAvailable)
-                .map((slot) => (
-                  <TouchableOpacity
-                    key={slot.id}
-                    style={styles.timeSlot}
-                    onPress={() => handleBookAppointment(slot)}
-                  >
-                    <Clock size={16} color="#3B82F6" />
-                    <Text style={styles.timeSlotText}>
-                      {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-            </View>
-          ) : (
-            <Text style={styles.noSlotsText}>{t('doctorDetail.noAvailableSlots')}</Text>
-          )}
-        </View>
-
         <View style={styles.aboutCard}>
           <Text style={styles.sectionTitle}>{t('doctorDetail.about')}</Text>
           <Text style={styles.aboutText}>
@@ -219,13 +114,6 @@ export default function DoctorDetailScreen() {
           </Text>
         </View>
       </ScrollView>
-      
-      {bookingLoading && (
-        <View style={styles.bookingOverlay}>
-          <ActivityIndicator size="large" color="#3B82F6" />
-          <Text style={styles.bookingText}>{t('doctorDetail.bookingAppointment')}</Text>
-        </View>
-      )}
 
       <TouchableOpacity
         style={styles.bookAppointmentButton}
@@ -291,10 +179,13 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+  profileIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#EBF8FF',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 16,
   },
   profileInfo: {
@@ -347,54 +238,6 @@ const styles = StyleSheet.create({
     color: '#374151',
     marginLeft: 12,
   },
-  availabilityCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  dateText: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 16,
-  },
-  timeSlotsLoading: {
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
-  timeSlotsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  timeSlot: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#EBF8FF',
-    borderWidth: 1,
-    borderColor: '#3B82F6',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 8,
-  },
-  timeSlotText: {
-    fontSize: 14,
-    color: '#3B82F6',
-    marginLeft: 6,
-    fontWeight: '500',
-  },
-  noSlotsText: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    paddingVertical: 20,
-  },
   aboutCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
@@ -410,21 +253,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#374151',
     lineHeight: 24,
-  },
-  bookingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  bookingText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    marginTop: 12,
   },
   bookAppointmentButton: {
     flexDirection: 'row',

@@ -102,17 +102,9 @@
   "doctorDetail": {
     "title": "Détails du Médecin",
     "contactInformation": "Informations de Contact",
-    "availableTimeSlots": "Créneaux Horaires Disponibles",
-    "date": "Date: {{date}}",
-    "noAvailableSlots": "Aucun créneau horaire disponible pour cette date",
     "about": "À propos",
     "aboutDescription": "Dr. {{firstName}} {{lastName}} est un professionnel de santé qualifié spécialisé en {{specialties}}. Avec des années d'expérience dans le domaine médical, il s'engage à fournir d'excellents soins et traitements aux patients.",
     "bookAppointment": "Réserver un Rendez-vous",
-    "bookingAppointment": "Réservation du rendez-vous...",
-    "bookingConfirmation": "Souhaitez-vous réserver un rendez-vous à {{time}} ?",
-    "bookingSuccess": "Rendez-vous réservé avec succès !",
-    "bookingFailed": "Échec de la réservation du rendez-vous. Veuillez réessayer.",
-    "loginRequired": "Veuillez vous connecter pour réserver un rendez-vous",
     "doctorNotFound": "Médecin non trouvé",
     "loadFailed": "Échec du chargement des détails du médecin"
   },

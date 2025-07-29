@@ -102,17 +102,9 @@
   "doctorDetail": {
     "title": "Doctor Details",
     "contactInformation": "Contact Information",
-    "availableTimeSlots": "Available Time Slots",
-    "date": "Date: {{date}}",
-    "noAvailableSlots": "No available time slots for this date",
     "about": "About",
     "aboutDescription": "Dr. {{firstName}} {{lastName}} is a qualified healthcare professional specializing in {{specialties}}. With years of experience in the medical field, they are committed to providing excellent patient care and treatment.",
     "bookAppointment": "Book Appointment",
-    "bookingAppointment": "Booking appointment...",
-    "bookingConfirmation": "Would you like to book an appointment at {{time}}?",
-    "bookingSuccess": "Appointment booked successfully!",
-    "bookingFailed": "Failed to book appointment. Please try again.",
-    "loginRequired": "Please log in to book an appointment",
     "doctorNotFound": "Doctor not found",
     "loadFailed": "Failed to load doctor details"
   },
