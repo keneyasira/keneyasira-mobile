@@ -186,10 +186,6 @@ export default function SearchScreen() {
           <Text style={styles.specialty}>
             {doctor.specialties.map(s => s.name).join(', ')}
           </Text>
-          <View style={styles.locationRow}>
-            <MapPin size={14} color="#6B7280" />
-            <Text style={styles.location}>{t('search.locationNotAvailable')}</Text>
-          </View>
           <View style={styles.availabilityRow}>
             <Clock size={14} color={nextAvailableSlot ? "#10B981" : "#EF4444"} />
             <Text style={[styles.availability, { color: nextAvailableSlot ? "#10B981" : "#EF4444" }]}>

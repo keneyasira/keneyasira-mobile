@@ -54,7 +54,6 @@
     "establishment": "Establishment",
     "nextAvailable": "Next: {{time}}",
     "noSlotsAvailable": "No slots available",
-    "locationNotAvailable": "Location not available",
     "notRated": "Not rated"
   },
   "appointments": {

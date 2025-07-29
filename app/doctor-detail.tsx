@@ -176,10 +176,6 @@ export default function DoctorDetailScreen() {
             <Mail size={18} color="#6B7280" />
             <Text style={styles.contactText}>{doctor.user.email}</Text>
           </View>
-          <View style={styles.contactItem}>
-            <MapPin size={18} color="#6B7280" />
-            <Text style={styles.contactText}>{t('search.locationNotAvailable')}</Text>
-          </View>
         </View>
 
         <View style={styles.availabilityCard}>

@@ -54,7 +54,6 @@
     "establishment": "Établissement",
     "nextAvailable": "Prochain: {{time}}",
     "noSlotsAvailable": "Aucun créneau disponible",
-    "locationNotAvailable": "Localisation non disponible",
     "notRated": "Non évalué"
   },
   "appointments": {
