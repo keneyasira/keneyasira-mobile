@@ -67,9 +67,6 @@ export default function LandingScreen() {
           <View style={styles.heroImageContainer}>
             <View style={styles.doctorIconsContainer}>
               <View style={styles.doctorIcon}>
-                <Stethoscope size={40} color="#035AA6" />
-              </View>
-              <View style={styles.doctorIcon}>
                 <Stethoscope size={40} color="#38BDF2" />
               </View>
             </View>
