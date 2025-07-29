@@ -13,7 +13,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Search, MapPin, Star, Building2, ChevronDown, X, Clock } from 'lucide-react-native';
+import { Search, MapPin, Star, Building2, ChevronDown, X, Clock, User } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { Practician, Establishment, TimeSlot } from '@/types/api';
 import { apiService } from '@/services/api';
@@ -173,12 +173,9 @@ export default function SearchScreen() {
       disabled={!nextAvailableSlot}
     >
       <View style={[styles.cardContent, !nextAvailableSlot && styles.cardDisabled]}>
-        <Image
-          source={{
-            uri: 'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=200',
-          }}
-          style={styles.doctorImage}
-        />
+        <View style={styles.doctorIcon}>
+          <User size={32} color="#3B82F6" />
+        </View>
         <View style={styles.doctorInfo}>
           <View style={styles.typeIndicator}>
             <Text style={styles.typeText}>{t('search.doctor')}</Text>
@@ -540,10 +537,13 @@ const styles = StyleSheet.create({
     color: '#3B82F6',
     textTransform: 'uppercase',
   },
-  doctorImage: {
+  doctorIcon: {
     width: 60,
     height: 60,
     borderRadius: 30,
+    backgroundColor: '#EBF8FF',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 16,
   },
   doctorInfo: {
