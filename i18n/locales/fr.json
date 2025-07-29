@@ -26,7 +26,7 @@
     "firstNamePlaceholder": "Entrez votre prénom",
     "lastNamePlaceholder": "Entrez votre nom",
     "emailPlaceholder": "Entrez votre adresse email",
-    "birthDatePlaceholder": "AAAA-MM-JJ",
+    "birthDatePlaceholder": "Date de naissance (AAAA-MM-JJ)",
     "sendOTP": "Envoyer OTP",
     "enterVerificationCode": "Entrez le Code de Vérification",
     "verificationCodeSent": "Nous avons envoyé un code à 6 chiffres au {{phone}}",
