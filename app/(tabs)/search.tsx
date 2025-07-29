@@ -12,9 +12,9 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Search, MapPin, Star, Building2, ChevronDown, X } from 'lucide-react-native';
+import { Search, MapPin, Star, Building2, ChevronDown, X, Clock } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { Practician, Establishment } from '@/types/api';
+import { Practician, Establishment, TimeSlot } from '@/types/api';
 import { apiService } from '@/services/api';
 
 interface Specialty {
@@ -25,6 +25,7 @@ interface Specialty {
 interface SearchResult {
   type: 'doctor' | 'establishment';
   data: Practician | Establishment;
+  nextAvailableSlot?: TimeSlot;
 }
 
 export default function SearchScreen() {
@@ -78,17 +79,48 @@ export default function SearchScreen() {
         apiService.searchEstablishments(searchFilters),
       ]);
 
-      // Combine results
-      const combinedResults: SearchResult[] = [
-        ...doctorsResponse.data.map((doctor: Practician) => ({
-          type: 'doctor' as const,
-          data: doctor,
-        })),
-        ...establishmentsResponse.data.map((establishment: Establishment) => ({
-          type: 'establishment' as const,
-          data: establishment,
-        })),
-      ];
+      // Get next available slots for each result
+      const today = new Date().toISOString().split('T')[0];
+      
+      const doctorResults = await Promise.all(
+        doctorsResponse.data.map(async (doctor: Practician) => {
+          try {
+            const timeSlots = await apiService.getPracticianTimeSlots(doctor.id, today);
+            const nextAvailable = timeSlots.find(slot => slot.isAvailable);
+            return {
+              type: 'doctor' as const,
+              data: doctor,
+              nextAvailableSlot: nextAvailable,
+            };
+          } catch (error) {
+            return {
+              type: 'doctor' as const,
+              data: doctor,
+            };
+          }
+        })
+      );
+
+      const establishmentResults = await Promise.all(
+        establishmentsResponse.data.map(async (establishment: Establishment) => {
+          try {
+            const timeSlots = await apiService.getEstablishmentTimeSlots(establishment.id, today);
+            const nextAvailable = timeSlots.find(slot => slot.isAvailable);
+            return {
+              type: 'establishment' as const,
+              data: establishment,
+              nextAvailableSlot: nextAvailable,
+            };
+          } catch (error) {
+            return {
+              type: 'establishment' as const,
+              data: establishment,
+            };
+          }
+        })
+      );
+
+      const combinedResults: SearchResult[] = [...doctorResults, ...establishmentResults];
 
       setResults(combinedResults);
     } catch (error) {
@@ -104,12 +136,26 @@ export default function SearchScreen() {
     setShowSpecialtyDropdown(false);
   };
 
-  const DoctorCard = ({ doctor }: { doctor: Practician }) => (
+  const formatTime = (timeString: string) => {
+    const time = new Date(`2000-01-01T${timeString}`);
+    return time.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
+  const DoctorCard = ({ doctor, nextAvailableSlot }: { doctor: Practician; nextAvailableSlot?: TimeSlot }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => router.push(`/doctor-detail?id=${doctor.id}`)}
+      onPress={() => {
+        if (nextAvailableSlot) {
+          router.push(`/doctor-detail?id=${doctor.id}`);
+        }
+      }}
+      disabled={!nextAvailableSlot}
     >
-      <View style={styles.cardContent}>
+      <View style={[styles.cardContent, !nextAvailableSlot && styles.cardDisabled]}>
         <Image
           source={{
             uri: 'https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=200',
@@ -130,6 +176,15 @@ export default function SearchScreen() {
             <MapPin size={14} color="#6B7280" />
             <Text style={styles.location}>Location not available</Text>
           </View>
+          <View style={styles.availabilityRow}>
+            <Clock size={14} color={nextAvailableSlot ? "#10B981" : "#EF4444"} />
+            <Text style={[styles.availability, { color: nextAvailableSlot ? "#10B981" : "#EF4444" }]}>
+              {nextAvailableSlot 
+                ? `Next: ${formatTime(nextAvailableSlot.startTime)}`
+                : 'No slots available'
+              }
+            </Text>
+          </View>
           <View style={styles.ratingRow}>
             <Star size={14} color="#F59E0B" />
             <Text style={styles.rating}>Not rated</Text>
@@ -139,12 +194,17 @@ export default function SearchScreen() {
     </TouchableOpacity>
   );
 
-  const EstablishmentCard = ({ establishment }: { establishment: Establishment }) => (
+  const EstablishmentCard = ({ establishment, nextAvailableSlot }: { establishment: Establishment; nextAvailableSlot?: TimeSlot }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => router.push(`/establishment-detail?id=${establishment.id}`)}
+      onPress={() => {
+        if (nextAvailableSlot) {
+          router.push(`/establishment-detail?id=${establishment.id}`);
+        }
+      }}
+      disabled={!nextAvailableSlot}
     >
-      <View style={styles.cardContent}>
+      <View style={[styles.cardContent, !nextAvailableSlot && styles.cardDisabled]}>
         <View style={styles.establishmentIcon}>
           <Building2 size={32} color="#3B82F6" />
         </View>
@@ -160,6 +220,15 @@ export default function SearchScreen() {
           <Text style={styles.specialties}>
             {establishment.specialties.map(s => s.name).join(', ')}
           </Text>
+          <View style={styles.availabilityRow}>
+            <Clock size={14} color={nextAvailableSlot ? "#10B981" : "#EF4444"} />
+            <Text style={[styles.availability, { color: nextAvailableSlot ? "#10B981" : "#EF4444" }]}>
+              {nextAvailableSlot 
+                ? `Next: ${formatTime(nextAvailableSlot.startTime)}`
+                : 'No slots available'
+              }
+            </Text>
+          </View>
           <View style={styles.ratingRow}>
             <Star size={14} color="#F59E0B" />
             <Text style={styles.rating}>Not rated</Text>
@@ -174,9 +243,9 @@ export default function SearchScreen() {
 
   const renderSearchResult = ({ item }: { item: SearchResult }) => {
     if (item.type === 'doctor') {
-      return <DoctorCard doctor={item.data as Practician} />;
+      return <DoctorCard doctor={item.data as Practician} nextAvailableSlot={item.nextAvailableSlot} />;
     } else {
-      return <EstablishmentCard establishment={item.data as Establishment} />;
+      return <EstablishmentCard establishment={item.data as Establishment} nextAvailableSlot={item.nextAvailableSlot} />;
     }
   };
 
@@ -484,6 +553,16 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     marginLeft: 4,
   },
+  availabilityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  availability: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: 4,
+  },
   ratingRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -497,6 +576,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#10B981',
+  },
+  cardDisabled: {
+    opacity: 0.6,
   },
   establishmentIcon: {
     width: 60,
