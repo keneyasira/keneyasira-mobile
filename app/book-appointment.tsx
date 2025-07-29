@@ -142,9 +142,19 @@ export default function BookAppointmentScreen() {
       return;
     }
 
+    const getBookingMessage = () => {
+      const timeText = `at ${formatTime(timeSlot.startTime)}`;
+      if (type === 'doctor' && timeSlot.establishment) {
+        return `Would you like to book an appointment ${timeText} at ${timeSlot.establishment.name}?`;
+      } else if (type === 'establishment' && timeSlot.practician) {
+        return `Would you like to book an appointment ${timeText} with Dr. ${timeSlot.practician.user.firstName} ${timeSlot.practician.user.lastName}?`;
+      }
+      return `Would you like to book an appointment ${timeText}?`;
+    };
+
     Alert.alert(
       'Book Appointment',
-      `Would you like to book an appointment at ${formatTime(timeSlot.startTime)}?`,
+      getBookingMessage(),
       [
         { text: 'Cancel', style: 'cancel' },
         {
