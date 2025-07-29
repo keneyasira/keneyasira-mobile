@@ -32,8 +32,10 @@ export default function AppointmentsScreen() {
     try {
       setLoading(true);
       const data = await apiService.getPatientAppointments(patient.id);
-      setAppointments(data);
+      console.log('Appointments data:', data);
+      setAppointments(data || []);
     } catch (error) {
+      console.error('Failed to load appointments:', error);
       Alert.alert('Error', 'Failed to load appointments');
     } finally {
       setLoading(false);
@@ -117,7 +119,7 @@ export default function AppointmentsScreen() {
           <View style={styles.providerContainer}>
             <User size={16} color="#6B7280" />
             <Text style={styles.providerName}>
-              Dr. {appointment.practician.firstName} {appointment.practician.lastName}
+              Dr. {appointment.practician.user?.firstName || appointment.practician.firstName} {appointment.practician.user?.lastName || appointment.practician.lastName}
             </Text>
           </View>
         )}

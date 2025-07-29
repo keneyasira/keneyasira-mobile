@@ -261,8 +261,15 @@ class ApiService {
   }
 
   async getPatientAppointments(patientId: string): Promise<Appointment[]> {
-    const response: AxiosResponse<Appointment[]> = await this.axios.get(`/patients/${patientId}/appointments`);
-    return response.data.data;
+    const response: AxiosResponse<{data: Appointment[]}> = await this.axios.get(`/patients/${patientId}/appointments`, {
+      params: {
+        page: 1,
+        limit: 100,
+        sort: ['date:DESC']
+      }
+    });
+    console.log('API Response for appointments:', response.data);
+    return response.data.data || [];
   }
 
   async getAppointmentById(id: string): Promise<Appointment> {

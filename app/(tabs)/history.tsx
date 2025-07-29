@@ -113,10 +113,10 @@ export default function HistoryScreen() {
         <View style={styles.providerContainer}>
           <User size={16} color="#6B7280" />
           <Text style={styles.providerText}>
-            Dr. {appointment.practician.firstName} {appointment.practician.lastName}
+            Dr. {appointment.practician.user?.firstName || appointment.practician.firstName} {appointment.practician.user?.lastName || appointment.practician.lastName}
           </Text>
           <Text style={styles.specialtyText}>
-            {appointment.practician.specialty}
+            {appointment.practician.specialties?.map(s => s.name).join(', ') || 'Specialty not available'}
           </Text>
         </View>
       )}
