@@ -14,8 +14,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Phone, ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { requestOTP } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -23,13 +25,13 @@ export default function LoginScreen() {
 
   const validateInput = () => {
     if (!phoneNumber.trim()) {
-      Alert.alert('Error', 'Please enter your phone number');
+      Alert.alert(t('common.error'), t('auth.phoneRequired'));
       return false;
     }
 
     const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
     if (!phoneRegex.test(phoneNumber)) {
-      Alert.alert('Error', 'Please enter a valid phone number');
+      Alert.alert(t('common.error'), t('auth.invalidPhone'));
       return false;
     }
 
@@ -46,7 +48,7 @@ export default function LoginScreen() {
       await requestOTP(phoneNumber);
       router.push(`/auth/verify-otp?phone=${encodeURIComponent(phoneNumber)}`);
     } catch (error) {
-      Alert.alert('Error', 'Failed to send OTP. Please try again.');
+      Alert.alert(t('common.error'), t('auth.otpSendFailed'));
     } finally {
       setLoading(false);
     }
@@ -60,9 +62,9 @@ export default function LoginScreen() {
       >
         <View style={styles.content}>
           <View style={styles.header}>
-            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.title}>{t('auth.welcomeBack')}</Text>
             <Text style={styles.subtitle}>
-              Enter your phone number to receive an OTP
+              {t('auth.enterPhoneNumber')}
             </Text>
           </View>
 
@@ -71,7 +73,7 @@ export default function LoginScreen() {
               <Phone size={20} color="#6B7280" />
               <TextInput
                 style={styles.input}
-                placeholder="Enter your phone number"
+                placeholder={t('auth.phoneNumberPlaceholder')}
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
                 keyboardType="phone-pad"
@@ -89,7 +91,7 @@ export default function LoginScreen() {
                 <ActivityIndicator size="small" color="#FFFFFF" />
               ) : (
                 <>
-                  <Text style={styles.buttonText}>Send OTP</Text>
+                  <Text style={styles.buttonText}>{t('auth.sendOTP')}</Text>
                   <ArrowRight size={20} color="#FFFFFF" />
                 </>
               )}
@@ -98,10 +100,10 @@ export default function LoginScreen() {
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>
-              You will receive an OTP via SMS to verify your phone number
+              {t('auth.smsNotice')}
             </Text>
             <Text style={styles.footerSubtext}>
-              By continuing, you agree to our Terms of Service and Privacy Policy
+              {t('auth.termsText')}
             </Text>
           </View>
         </View>

@@ -2,8 +2,10 @@ import { Tabs } from 'expo-router';
 import { Search, Calendar, User } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 export default function TabLayout() {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   return (
@@ -28,7 +30,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: 'Search',
+          title: t('navigation.search'),
           tabBarIcon: ({ size, color }) => (
             <Search size={size} color={color} />
           ),
@@ -37,7 +39,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="appointments"
         options={{
-          title: 'Appointments',
+          title: t('navigation.appointments'),
           tabBarIcon: ({ size, color }) => (
             <Calendar size={size} color={color} />
           ),
@@ -46,7 +48,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t('navigation.profile'),
           tabBarIcon: ({ size, color }) => (
             <User size={size} color={color} />
           ),

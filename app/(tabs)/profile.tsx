@@ -12,8 +12,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { User, Mail, Phone, MapPin, Calendar, CreditCard as Edit3, Save, LogOut } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from '@/components/LanguageSelector';
 
 export default function ProfileScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { patient, logout, updatePatient } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
@@ -30,20 +33,20 @@ export default function ProfileScreen() {
     try {
       await updatePatient(formData);
       setIsEditing(false);
-      Alert.alert('Success', 'Profile updated successfully');
+      Alert.alert(t('common.success'), t('profile.profileUpdated'));
     } catch (error) {
-      Alert.alert('Error', 'Failed to update profile');
+      Alert.alert(t('common.error'), t('profile.profileUpdateFailed'));
     }
   };
 
   const handleLogout = () => {
     Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
+      t('profile.logout'),
+      t('profile.logoutConfirmation'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Logout',
+          text: t('profile.logout'),
           style: 'destructive',
           onPress: async () => {
             await logout();
@@ -55,7 +58,7 @@ export default function ProfileScreen() {
   };
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Not provided';
+    if (!dateString) return t('profile.notProvided');
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -68,7 +71,7 @@ export default function ProfileScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Unable to load profile</Text>
+          <Text style={styles.errorText}>{t('profile.unableToLoad')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -77,7 +80,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>My Profile</Text>
+        <Text style={styles.title}>{t('profile.title')}</Text>
         <TouchableOpacity
           style={styles.editButton}
           onPress={() => {
@@ -97,6 +100,8 @@ export default function ProfileScreen() {
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <LanguageSelector />
+        
         <View style={styles.profileCard}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
@@ -110,7 +115,7 @@ export default function ProfileScreen() {
 
           <View style={styles.formContainer}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>First Name</Text>
+              <Text style={styles.label}>{t('profile.firstName')}</Text>
               <View style={styles.inputContainer}>
                 <User size={18} color="#6B7280" />
                 <TextInput
@@ -118,13 +123,13 @@ export default function ProfileScreen() {
                   value={formData.firstName}
                   onChangeText={(text) => setFormData({ ...formData, firstName: text })}
                   editable={isEditing}
-                  placeholder="Enter first name"
+                  placeholder={t('profile.firstNamePlaceholder')}
                 />
               </View>
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Last Name</Text>
+              <Text style={styles.label}>{t('profile.lastName')}</Text>
               <View style={styles.inputContainer}>
                 <User size={18} color="#6B7280" />
                 <TextInput
@@ -132,27 +137,27 @@ export default function ProfileScreen() {
                   value={formData.lastName}
                   onChangeText={(text) => setFormData({ ...formData, lastName: text })}
                   editable={isEditing}
-                  placeholder="Enter last name"
+                  placeholder={t('profile.lastNamePlaceholder')}
                 />
               </View>
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
+              <Text style={styles.label}>{t('profile.email')}</Text>
               <View style={styles.inputContainer}>
                 <Mail size={18} color="#6B7280" />
                 <TextInput
                   style={[styles.input, styles.inputDisabled]}
                   value={patient.email}
                   editable={false}
-                  placeholder="Email address"
+                  placeholder={t('profile.email')}
                 />
               </View>
-              <Text style={styles.inputNote}>Email cannot be changed</Text>
+              <Text style={styles.inputNote}>{t('profile.emailCannotChange')}</Text>
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Phone Number</Text>
+              <Text style={styles.label}>{t('profile.phone')}</Text>
               <View style={styles.inputContainer}>
                 <Phone size={18} color="#6B7280" />
                 <TextInput
@@ -160,14 +165,14 @@ export default function ProfileScreen() {
                   value={formData.phone}
                   onChangeText={(text) => setFormData({ ...formData, phone: text })}
                   editable={isEditing}
-                  placeholder="Enter phone number"
+                  placeholder={t('profile.phonePlaceholder')}
                   keyboardType="phone-pad"
                 />
               </View>
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Address</Text>
+              <Text style={styles.label}>{t('profile.address')}</Text>
               <View style={styles.inputContainer}>
                 <MapPin size={18} color="#6B7280" />
                 <TextInput
@@ -175,14 +180,14 @@ export default function ProfileScreen() {
                   value={formData.address}
                   onChangeText={(text) => setFormData({ ...formData, address: text })}
                   editable={isEditing}
-                  placeholder="Enter address"
+                  placeholder={t('profile.addressPlaceholder')}
                   multiline
                 />
               </View>
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>City</Text>
+              <Text style={styles.label}>{t('profile.city')}</Text>
               <View style={styles.inputContainer}>
                 <MapPin size={18} color="#6B7280" />
                 <TextInput
@@ -190,39 +195,39 @@ export default function ProfileScreen() {
                   value={formData.city}
                   onChangeText={(text) => setFormData({ ...formData, city: text })}
                   editable={isEditing}
-                  placeholder="Enter city"
+                  placeholder={t('profile.cityPlaceholder')}
                 />
               </View>
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Date of Birth</Text>
+              <Text style={styles.label}>{t('profile.dateOfBirth')}</Text>
               <View style={styles.inputContainer}>
                 <Calendar size={18} color="#6B7280" />
                 <TextInput
                   style={[styles.input, styles.inputDisabled]}
                   value={formatDate(formData.birthDate)}
                   editable={false}
-                  placeholder="Date of birth"
+                  placeholder={t('profile.dateOfBirth')}
                 />
               </View>
             </View>
           </View>
 
           <View style={styles.accountInfo}>
-            <Text style={styles.accountInfoTitle}>Account Information</Text>
+            <Text style={styles.accountInfoTitle}>{t('profile.accountInformation')}</Text>
             <Text style={styles.accountInfoText}>
-              Member since: {formatDate(patient.createdAt)}
+              {t('profile.memberSince', { date: formatDate(patient.createdAt) })}
             </Text>
             <Text style={styles.accountInfoText}>
-              Last updated: {formatDate(patient.updatedAt)}
+              {t('profile.lastUpdated', { date: formatDate(patient.updatedAt) })}
             </Text>
           </View>
         </View>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <LogOut size={20} color="#EF4444" />
-          <Text style={styles.logoutButtonText}>Logout</Text>
+          <Text style={styles.logoutButtonText}>{t('profile.logout')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

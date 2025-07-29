@@ -14,8 +14,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, ArrowRight } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function VerifyOTPScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { phone } = useLocalSearchParams<{ phone: string }>();
   const { loginWithOTP, requestOTP } = useAuth();
@@ -54,7 +56,7 @@ export default function VerifyOTPScreen() {
   const handleVerifyOTP = async () => {
     const otpString = otp.join('');
     if (otpString.length !== 6) {
-      Alert.alert('Error', 'Please enter the complete 6-digit code');
+      Alert.alert(t('common.error'), t('auth.otpRequired'));
       return;
     }
 
@@ -63,7 +65,7 @@ export default function VerifyOTPScreen() {
       await loginWithOTP(phone, otpString);
       router.replace('/(tabs)/search');
     } catch (error) {
-      Alert.alert('Error', 'Invalid verification code. Please try again.');
+      Alert.alert(t('common.error'), t('auth.invalidOTP'));
       // Clear OTP inputs
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
@@ -79,9 +81,9 @@ export default function VerifyOTPScreen() {
       setCountdown(60);
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
-      Alert.alert('Success', 'Verification code sent successfully');
+      Alert.alert(t('common.success'), t('auth.otpSentSuccess'));
     } catch (error) {
-      Alert.alert('Error', 'Failed to resend code. Please try again.');
+      Alert.alert(t('common.error'), t('auth.otpSendFailed'));
     } finally {
       setResendLoading(false);
     }
@@ -104,9 +106,9 @@ export default function VerifyOTPScreen() {
 
         <View style={styles.content}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>Enter Verification Code</Text>
+            <Text style={styles.title}>{t('auth.enterVerificationCode')}</Text>
             <Text style={styles.subtitle}>
-              We've sent a 6-digit code to {phone}
+              {t('auth.verificationCodeSent', { phone })}
             </Text>
           </View>
 
@@ -142,7 +144,7 @@ export default function VerifyOTPScreen() {
               <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <>
-                <Text style={styles.verifyButtonText}>Verify Code</Text>
+                <Text style={styles.verifyButtonText}>{t('auth.verifyCode')}</Text>
                 <ArrowRight size={20} color="#FFFFFF" />
               </>
             )}
@@ -151,7 +153,7 @@ export default function VerifyOTPScreen() {
           <View style={styles.resendContainer}>
             {countdown > 0 ? (
               <Text style={styles.countdownText}>
-                Resend code in {countdown}s
+                {t('auth.resendCodeIn', { seconds: countdown })}
               </Text>
             ) : (
               <TouchableOpacity
@@ -161,7 +163,7 @@ export default function VerifyOTPScreen() {
                 {resendLoading ? (
                   <ActivityIndicator size="small" color="#3B82F6" />
                 ) : (
-                  <Text style={styles.resendText}>Resend Code</Text>
+                  <Text style={styles.resendText}>{t('auth.resendCode')}</Text>
                 )}
               </TouchableOpacity>
             )}
