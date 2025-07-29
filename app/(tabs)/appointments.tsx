@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,6 +14,8 @@ import { Appointment } from '@/types/api';
 import { apiService } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 type TabType = 'upcoming' | 'past';
 
@@ -25,6 +26,7 @@ export default function AppointmentsScreen() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const { alertState, showAlert, hideAlert } = useCustomAlert();
 
   useEffect(() => {
     loadAppointments();
@@ -40,7 +42,11 @@ export default function AppointmentsScreen() {
       setAppointments(data || []);
     } catch (error) {
       console.error('Failed to load appointments:', error);
-      Alert.alert(t('common.error'), t('appointments.loadFailed'));
+      showAlert({
+        title: t('common.error'),
+        message: t('appointments.loadFailed'),
+        type: 'error',
+      });
     } finally {
       setLoading(false);
     }
@@ -262,6 +268,15 @@ export default function AppointmentsScreen() {
           }
         />
       )}
+      
+      <CustomAlert
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        type={alertState.type}
+        buttons={alertState.buttons}
+        onDismiss={hideAlert}
+      />
     </SafeAreaView>
   );
 }

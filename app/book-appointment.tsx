@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react-native';
@@ -15,6 +14,8 @@ import { Practician, Establishment, TimeSlot, CreateAppointmentRequest } from '@
 import { apiService } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 interface WeekData {
   startDate: Date;
@@ -39,6 +40,7 @@ export default function BookAppointmentScreen() {
   const [timeSlotsLoading, setTimeSlotsLoading] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0);
+  const { alertState, showAlert, hideAlert } = useCustomAlert();
 
   useEffect(() => {
     if (id && type) {
@@ -63,7 +65,11 @@ export default function BookAppointmentScreen() {
       }
       setProvider(data);
     } catch (error) {
-      Alert.alert(t('common.error'), t('bookAppointment.loadFailed'));
+      showAlert({
+        title: t('common.error'),
+        message: t('bookAppointment.loadFailed'),
+        type: 'error',
+      });
       router.back();
     } finally {
       setLoading(false);
@@ -140,7 +146,11 @@ export default function BookAppointmentScreen() {
 
   const handleBookAppointment = async (timeSlot: TimeSlot) => {
     if (!patient) {
-      Alert.alert(t('common.error'), t('bookAppointment.loginRequired'));
+      showAlert({
+        title: t('common.error'),
+        message: t('bookAppointment.loginRequired'),
+        type: 'error',
+      });
       return;
     }
 
@@ -161,10 +171,11 @@ export default function BookAppointmentScreen() {
       return t('bookAppointment.bookingConfirmationGeneric', { time: timeText });
     };
 
-    Alert.alert(
-      t('bookAppointment.title'),
-      getBookingMessage(),
-      [
+    showAlert({
+      title: t('bookAppointment.title'),
+      message: getBookingMessage(),
+      type: 'info',
+      buttons: [
         { text: t('common.cancel'), style: 'cancel' },
         {
           text: t('bookAppointment.book'),
@@ -177,21 +188,30 @@ export default function BookAppointmentScreen() {
               };
               
               await apiService.createAppointment(appointmentRequest);
-              Alert.alert(t('common.success'), t('bookAppointment.bookingSuccess'), [
-                {
-                  text: t('common.ok'),
-                  onPress: () => router.back(),
-                },
-              ]);
+              showAlert({
+                title: t('common.success'),
+                message: t('bookAppointment.bookingSuccess'),
+                type: 'success',
+                buttons: [
+                  {
+                    text: t('common.ok'),
+                    onPress: () => router.back(),
+                  },
+                ],
+              });
             } catch (error) {
-              Alert.alert(t('common.error'), t('bookAppointment.bookingFailed'));
+              showAlert({
+                title: t('common.error'),
+                message: t('bookAppointment.bookingFailed'),
+                type: 'error',
+              });
             } finally {
               setBookingLoading(false);
             }
           },
         },
-      ]
-    );
+      ],
+    });
   };
 
   const navigateWeek = (direction: 'prev' | 'next') => {
@@ -329,6 +349,15 @@ export default function BookAppointmentScreen() {
           <Text style={styles.bookingText}>{t('bookAppointment.bookingAppointment')}</Text>
         </View>
       )}
+      
+      <CustomAlert
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        type={alertState.type}
+        buttons={alertState.buttons}
+        onDismiss={hideAlert}
+      />
     </SafeAreaView>
   );
 }

@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,12 +13,15 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/LanguageSelector';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { patient, logout, updatePatient } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const { alertState, showAlert, hideAlert } = useCustomAlert();
   const [formData, setFormData] = useState({
     firstName: patient?.user.firstName || '',
     lastName: patient?.user.lastName || '',
@@ -33,17 +35,26 @@ export default function ProfileScreen() {
     try {
       await updatePatient(patient.id, formData);
       setIsEditing(false);
-      Alert.alert(t('common.success'), t('profile.profileUpdated'));
+      showAlert({
+        title: t('common.success'),
+        message: t('profile.profileUpdated'),
+        type: 'success',
+      });
     } catch (error) {
-      Alert.alert(t('common.error'), t('profile.profileUpdateFailed'));
+      showAlert({
+        title: t('common.error'),
+        message: t('profile.profileUpdateFailed'),
+        type: 'error',
+      });
     }
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      t('profile.logout'),
-      t('profile.logoutConfirmation'),
-      [
+    showAlert({
+      title: t('profile.logout'),
+      message: t('profile.logoutConfirmation'),
+      type: 'warning',
+      buttons: [
         { text: t('common.cancel'), style: 'cancel' },
         {
           text: t('profile.logout'),
@@ -53,8 +64,8 @@ export default function ProfileScreen() {
             router.replace('/auth/login');
           },
         },
-      ]
-    );
+      ],
+    });
   };
 
   const formatDate = (dateString?: string) => {
@@ -230,6 +241,15 @@ export default function ProfileScreen() {
           <Text style={styles.logoutButtonText}>{t('profile.logout')}</Text>
         </TouchableOpacity>
       </ScrollView>
+      
+      <CustomAlert
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        type={alertState.type}
+        buttons={alertState.buttons}
+        onDismiss={hideAlert}
+      />
     </SafeAreaView>
   );
 }

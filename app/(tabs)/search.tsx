@@ -8,7 +8,6 @@ import {
   Image,
   StyleSheet,
   ActivityIndicator,
-  Alert,
   ScrollView,
   RefreshControl,
 } from 'react-native';
@@ -18,6 +17,8 @@ import { useRouter } from 'expo-router';
 import { Practician, Establishment, TimeSlot } from '@/types/api';
 import { apiService } from '@/services/api';
 import { useTranslation } from 'react-i18next';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 interface Specialty {
   id: string;
@@ -45,6 +46,7 @@ export default function SearchScreen() {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreResults, setHasMoreResults] = useState(false);
   const ITEMS_PER_PAGE = 10;
+  const { alertState, showAlert, hideAlert } = useCustomAlert();
 
   useEffect(() => {
     loadSpecialties();
@@ -153,7 +155,11 @@ export default function SearchScreen() {
       setHasMoreResults(totalResults === ITEMS_PER_PAGE);
 
     } catch (error) {
-      Alert.alert('Error', 'Failed to search. Please try again.');
+      showAlert({
+        title: t('common.error'),
+        message: 'Failed to search. Please try again.',
+        type: 'error',
+      });
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -429,6 +435,15 @@ export default function SearchScreen() {
           />
         )}
       </View>
+      
+      <CustomAlert
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        type={alertState.type}
+        buttons={alertState.buttons}
+        onDismiss={hideAlert}
+      />
     </SafeAreaView>
   );
 }

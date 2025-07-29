@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,6 +14,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Establishment, Practician } from '@/types/api';
 import { apiService } from '@/services/api';
 import { useTranslation } from 'react-i18next';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 export default function EstablishmentDetailScreen() {
   const { t } = useTranslation();
@@ -24,6 +25,7 @@ export default function EstablishmentDetailScreen() {
   const [practicians, setPracticians] = useState<Practician[]>([]);
   const [loading, setLoading] = useState(true);
   const [practiciansLoading, setPracticiansLoading] = useState(false);
+  const { alertState, showAlert, hideAlert } = useCustomAlert();
 
   useEffect(() => {
     if (id) {
@@ -43,7 +45,11 @@ export default function EstablishmentDetailScreen() {
       const data = await apiService.getEstablishmentById(id);
       setEstablishment(data);
     } catch (error) {
-      Alert.alert(t('common.error'), t('establishmentDetail.loadFailed'));
+      showAlert({
+        title: t('common.error'),
+        message: t('establishmentDetail.loadFailed'),
+        type: 'error',
+      });
       router.back();
     } finally {
       setLoading(false);
@@ -211,6 +217,15 @@ export default function EstablishmentDetailScreen() {
         <Calendar size={20} color="#FFFFFF" />
         <Text style={styles.bookAppointmentButtonText}>{t('establishmentDetail.bookAppointment')}</Text>
       </TouchableOpacity>
+      
+      <CustomAlert
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        type={alertState.type}
+        buttons={alertState.buttons}
+        onDismiss={hideAlert}
+      />
     </SafeAreaView>
   );
 }
