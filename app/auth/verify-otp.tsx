@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: 40,
-    gap: 10,
+    gap: 5,
   },
   otpInput: {
     width: 48,
