@@ -14,10 +14,12 @@ import { Calendar, Clock, MapPin, User } from 'lucide-react-native';
 import { Appointment } from '@/types/api';
 import { apiService } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 type TabType = 'upcoming' | 'past';
 
 export default function AppointmentsScreen() {
+  const { t } = useTranslation();
   const { patient } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('upcoming');
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -38,7 +40,7 @@ export default function AppointmentsScreen() {
       setAppointments(data || []);
     } catch (error) {
       console.error('Failed to load appointments:', error);
-      Alert.alert('Error', 'Failed to load appointments');
+      Alert.alert(t('common.error'), t('appointments.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -137,7 +139,7 @@ export default function AppointmentsScreen() {
         </View>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(appointment.appointmentStatus.name) }]}>
           <Text style={styles.statusText}>
-            {appointment.appointmentStatus.name.charAt(0).toUpperCase() + appointment.appointmentStatus.name.slice(1)}
+            {t(`appointments.statuses.${appointment.appointmentStatus.name}`)}
           </Text>
         </View>
       </View>
@@ -164,7 +166,7 @@ export default function AppointmentsScreen() {
           style={styles.cancelButton}
           onPress={() => handleCancelAppointment(appointment.id)}
         >
-          <Text style={styles.cancelButtonText}>Cancel Appointment</Text>
+          <Text style={styles.cancelButtonText}>{t('appointments.cancelAppointment')}</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -172,20 +174,20 @@ export default function AppointmentsScreen() {
 
   const handleCancelAppointment = async (appointmentId: string) => {
     Alert.alert(
-      'Cancel Appointment',
-      'Are you sure you want to cancel this appointment?',
+      t('appointments.cancelAppointment'),
+      t('appointments.cancelConfirmation'),
       [
-        { text: 'No', style: 'cancel' },
+        { text: t('common.no'), style: 'cancel' },
         {
-          text: 'Yes',
+          text: t('common.yes'),
           style: 'destructive',
           onPress: async () => {
             try {
               await apiService.cancelAppointment(appointmentId);
               await loadAppointments();
-              Alert.alert('Success', 'Appointment cancelled successfully');
+              Alert.alert(t('common.success'), t('appointments.cancelSuccess'));
             } catch (error) {
-              Alert.alert('Error', 'Failed to cancel appointment');
+              Alert.alert(t('common.error'), t('appointments.cancelFailed'));
             }
           },
         },
@@ -198,7 +200,7 @@ export default function AppointmentsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>My Appointments</Text>
+        <Text style={styles.title}>{t('appointments.title')}</Text>
         
         <View style={styles.tabContainer}>
           <TouchableOpacity
@@ -214,7 +216,7 @@ export default function AppointmentsScreen() {
                 activeTab === 'upcoming' && styles.tabTextActive,
               ]}
             >
-              Upcoming ({appointments.filter(a => {
+              {t('appointments.upcoming')} ({appointments.filter(a => {
                 const now = new Date();
                 now.setHours(0, 0, 0, 0);
                 const appointmentDate = new Date(a.timeslot.date);
@@ -239,7 +241,7 @@ export default function AppointmentsScreen() {
                 activeTab === 'past' && styles.tabTextActive,
               ]}
             >
-              Past ({appointments.filter(a => {
+              {t('appointments.past')} ({appointments.filter(a => {
                 const now = new Date();
                 now.setHours(0, 0, 0, 0);
                 const appointmentDate = new Date(a.timeslot.date);
@@ -277,12 +279,12 @@ export default function AppointmentsScreen() {
             <View style={styles.emptyContainer}>
               <Calendar size={64} color="#D1D5DB" />
               <Text style={styles.emptyTitle}>
-                No {activeTab} appointments
+                {activeTab === 'upcoming' ? t('appointments.noUpcomingAppointments') : t('appointments.noPastAppointments')}
               </Text>
               <Text style={styles.emptyText}>
                 {activeTab === 'upcoming'
-                  ? 'Book your first appointment to get started'
-                  : 'Your appointment history will appear here'}
+                  ? t('appointments.bookFirstAppointment')
+                  : t('appointments.historyWillAppear')}
               </Text>
             </View>
           }

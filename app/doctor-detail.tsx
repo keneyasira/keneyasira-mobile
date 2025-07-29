@@ -15,8 +15,10 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Practician, TimeSlot, CreateAppointmentRequest } from '@/types/api';
 import { apiService } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function DoctorDetailScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { patient } = useAuth();
@@ -45,7 +47,7 @@ export default function DoctorDetailScreen() {
       const data = await apiService.getPracticianById(id);
       setDoctor(data);
     } catch (error) {
-      Alert.alert('Error', 'Failed to load doctor details');
+      Alert.alert(t('common.error'), t('doctorDetail.loadFailed'));
       router.back();
     } finally {
       setLoading(false);
@@ -78,17 +80,17 @@ export default function DoctorDetailScreen() {
 
   const handleBookAppointment = async (timeSlot: TimeSlot) => {
     if (!patient) {
-      Alert.alert('Error', 'Please log in to book an appointment');
+      Alert.alert(t('common.error'), t('doctorDetail.loginRequired'));
       return;
     }
 
     Alert.alert(
-      'Book Appointment',
-      `Would you like to book an appointment at ${formatTime(timeSlot.startTime)}?`,
+      t('doctorDetail.bookAppointment'),
+      t('doctorDetail.bookingConfirmation', { time: formatTime(timeSlot.startTime) }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Book',
+          text: t('bookAppointment.book'),
           onPress: async () => {
             try {
               setBookingLoading(true);
@@ -98,12 +100,12 @@ export default function DoctorDetailScreen() {
               };
               
               await apiService.createAppointment(appointmentRequest);
-              Alert.alert('Success', 'Appointment booked successfully!');
+              Alert.alert(t('common.success'), t('doctorDetail.bookingSuccess'));
               
               // Refresh time slots to show updated availability
               await loadTimeSlots();
             } catch (error) {
-              Alert.alert('Error', 'Failed to book appointment. Please try again.');
+              Alert.alert(t('common.error'), t('doctorDetail.bookingFailed'));
             } finally {
               setBookingLoading(false);
             }
@@ -127,7 +129,7 @@ export default function DoctorDetailScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Doctor not found</Text>
+          <Text style={styles.errorText}>{t('doctorDetail.doctorNotFound')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -139,7 +141,7 @@ export default function DoctorDetailScreen() {
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <ArrowLeft size={24} color="#111827" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Doctor Details</Text>
+        <Text style={styles.headerTitle}>{t('doctorDetail.title')}</Text>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -159,13 +161,13 @@ export default function DoctorDetailScreen() {
             </Text>
             <View style={styles.ratingContainer}>
               <Star size={16} color="#F59E0B" />
-              <Text style={styles.rating}>Not rated</Text>
+              <Text style={styles.rating}>{t('search.notRated')}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.contactCard}>
-          <Text style={styles.sectionTitle}>Contact Information</Text>
+          <Text style={styles.sectionTitle}>{t('doctorDetail.contactInformation')}</Text>
           <View style={styles.contactItem}>
             <Phone size={18} color="#6B7280" />
             <Text style={styles.contactText}>{doctor.user.phone}</Text>
@@ -176,13 +178,13 @@ export default function DoctorDetailScreen() {
           </View>
           <View style={styles.contactItem}>
             <MapPin size={18} color="#6B7280" />
-            <Text style={styles.contactText}>Location not available</Text>
+            <Text style={styles.contactText}>{t('search.locationNotAvailable')}</Text>
           </View>
         </View>
 
         <View style={styles.availabilityCard}>
-          <Text style={styles.sectionTitle}>Available Time Slots</Text>
-          <Text style={styles.dateText}>Date: {selectedDate}</Text>
+          <Text style={styles.sectionTitle}>{t('doctorDetail.availableTimeSlots')}</Text>
+          <Text style={styles.dateText}>{t('doctorDetail.date', { date: selectedDate })}</Text>
           
           {timeSlotsLoading ? (
             <View style={styles.timeSlotsLoading}>
@@ -206,17 +208,18 @@ export default function DoctorDetailScreen() {
                 ))}
             </View>
           ) : (
-            <Text style={styles.noSlotsText}>No available time slots for this date</Text>
+            <Text style={styles.noSlotsText}>{t('doctorDetail.noAvailableSlots')}</Text>
           )}
         </View>
 
         <View style={styles.aboutCard}>
-          <Text style={styles.sectionTitle}>About</Text>
+          <Text style={styles.sectionTitle}>{t('doctorDetail.about')}</Text>
           <Text style={styles.aboutText}>
-            Dr. {doctor.user.firstName} {doctor.user.lastName} is a qualified healthcare professional 
-            specializing in {doctor.specialties.map(s => s.name).join(', ')}. 
-            With years of experience in the medical field, they are committed to providing 
-            excellent patient care and treatment.
+            {t('doctorDetail.aboutDescription', {
+              firstName: doctor.user.firstName,
+              lastName: doctor.user.lastName,
+              specialties: doctor.specialties.map(s => s.name).join(', ')
+            })}
           </Text>
         </View>
       </ScrollView>
@@ -224,7 +227,7 @@ export default function DoctorDetailScreen() {
       {bookingLoading && (
         <View style={styles.bookingOverlay}>
           <ActivityIndicator size="large" color="#3B82F6" />
-          <Text style={styles.bookingText}>Booking appointment...</Text>
+          <Text style={styles.bookingText}>{t('doctorDetail.bookingAppointment')}</Text>
         </View>
       )}
 
@@ -233,7 +236,7 @@ export default function DoctorDetailScreen() {
         onPress={() => router.push(`/book-appointment?type=doctor&id=${doctor.id}`)}
       >
         <Calendar size={20} color="#FFFFFF" />
-        <Text style={styles.bookAppointmentButtonText}>Book Appointment</Text>
+        <Text style={styles.bookAppointmentButtonText}>{t('doctorDetail.bookAppointment')}</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

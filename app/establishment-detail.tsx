@@ -14,8 +14,10 @@ import { ArrowLeft, MapPin, Star, Phone, Mail, Building2, Users, Calendar } from
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Establishment, Practician } from '@/types/api';
 import { apiService } from '@/services/api';
+import { useTranslation } from 'react-i18next';
 
 export default function EstablishmentDetailScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [establishment, setEstablishment] = useState<Establishment | null>(null);
@@ -41,7 +43,7 @@ export default function EstablishmentDetailScreen() {
       const data = await apiService.getEstablishmentById(id);
       setEstablishment(data);
     } catch (error) {
-      Alert.alert('Error', 'Failed to load establishment details');
+      Alert.alert(t('common.error'), t('establishmentDetail.loadFailed'));
       router.back();
     } finally {
       setLoading(false);
@@ -93,7 +95,7 @@ export default function EstablishmentDetailScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Establishment not found</Text>
+         <Text style={styles.errorText}>{t('establishmentDetail.establishmentNotFound')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -105,7 +107,7 @@ export default function EstablishmentDetailScreen() {
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <ArrowLeft size={24} color="#111827" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Establishment Details</Text>
+        <Text style={styles.headerTitle}>{t('establishmentDetail.title')}</Text>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -124,13 +126,13 @@ export default function EstablishmentDetailScreen() {
             </View>
             <View style={styles.ratingContainer}>
               <Star size={16} color="#F59E0B" />
-              <Text style={styles.rating}>Not rated</Text>
+              <Text style={styles.rating}>{t('search.notRated')}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.infoCard}>
-          <Text style={styles.sectionTitle}>Information</Text>
+          <Text style={styles.sectionTitle}>{t('establishmentDetail.information')}</Text>
           <View style={styles.infoItem}>
             <MapPin size={18} color="#6B7280" />
             <Text style={styles.infoText}>{establishment.address}</Text>
@@ -150,7 +152,7 @@ export default function EstablishmentDetailScreen() {
         </View>
 
         <View style={styles.specialtiesCard}>
-          <Text style={styles.sectionTitle}>Specialties</Text>
+          <Text style={styles.sectionTitle}>{t('establishmentDetail.specialties')}</Text>
           <View style={styles.specialtiesContainer}>
             {establishment.specialties.map((specialty) => (
               <View key={specialty.id} style={styles.specialtyTag}>
@@ -162,14 +164,14 @@ export default function EstablishmentDetailScreen() {
 
         {establishment.description && (
           <View style={styles.descriptionCard}>
-            <Text style={styles.sectionTitle}>Description</Text>
+            <Text style={styles.sectionTitle}>{t('establishmentDetail.description')}</Text>
             <Text style={styles.descriptionText}>{establishment.description}</Text>
           </View>
         )}
 
         <View style={styles.practiciansCard}>
           <Text style={styles.sectionTitle}>
-            Doctors ({practicians.length})
+            {t('establishmentDetail.doctors', { count: practicians.length })}
           </Text>
           {practiciansLoading ? (
             <View style={styles.practiciansLoading}>
@@ -183,22 +185,25 @@ export default function EstablishmentDetailScreen() {
               {practicians.length > 3 && (
                 <TouchableOpacity style={styles.viewAllButton}>
                   <Text style={styles.viewAllText}>
-                    View all {practicians.length} doctors
+                    {t('establishmentDetail.viewAllDoctors', { count: practicians.length })}
                   </Text>
                 </TouchableOpacity>
               )}
             </View>
           ) : (
-            <Text style={styles.noPracticiansText}>No doctors available</Text>
+            <Text style={styles.noPracticiansText}>{t('establishmentDetail.noDoctorsAvailable')}</Text>
           )}
         </View>
 
         <View style={styles.aboutCard}>
-          <Text style={styles.sectionTitle}>About</Text>
+          <Text style={styles.sectionTitle}>{t('establishmentDetail.about')}</Text>
           <Text style={styles.aboutText}>
-            {establishment.name} is a {establishment.type.name.toLowerCase()} affiliated with {establishment.affiliation.name}. 
-            We specialize in {establishment.specialties.map(s => s.name).join(', ')} and are committed to providing 
-            excellent healthcare services to our patients.
+            {t('establishmentDetail.aboutDescription', {
+              name: establishment.name,
+              type: establishment.type.name.toLowerCase(),
+              affiliation: establishment.affiliation.name,
+              specialties: establishment.specialties.map(s => s.name).join(', ')
+            })}
           </Text>
         </View>
       </ScrollView>
@@ -208,7 +213,7 @@ export default function EstablishmentDetailScreen() {
         onPress={() => router.push(`/book-appointment?type=establishment&id=${establishment.id}`)}
       >
         <Calendar size={20} color="#FFFFFF" />
-        <Text style={styles.bookAppointmentButtonText}>Book Appointment</Text>
+        <Text style={styles.bookAppointmentButtonText}>{t('establishmentDetail.bookAppointment')}</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

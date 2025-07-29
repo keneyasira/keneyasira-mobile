@@ -14,6 +14,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Practician, Establishment, TimeSlot, CreateAppointmentRequest } from '@/types/api';
 import { apiService } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface WeekData {
   startDate: Date;
@@ -27,6 +28,7 @@ interface WeekData {
 }
 
 export default function BookAppointmentScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { type, id } = useLocalSearchParams<{ type: 'doctor' | 'establishment'; id: string }>();
   const { patient } = useAuth();
@@ -61,7 +63,7 @@ export default function BookAppointmentScreen() {
       }
       setProvider(data);
     } catch (error) {
-      Alert.alert('Error', 'Failed to load provider details');
+      Alert.alert(t('common.error'), t('bookAppointment.loadFailed'));
       router.back();
     } finally {
       setLoading(false);
@@ -138,27 +140,34 @@ export default function BookAppointmentScreen() {
 
   const handleBookAppointment = async (timeSlot: TimeSlot) => {
     if (!patient) {
-      Alert.alert('Error', 'Please log in to book an appointment');
+      Alert.alert(t('common.error'), t('bookAppointment.loginRequired'));
       return;
     }
 
     const getBookingMessage = () => {
       const timeText = `at ${formatTime(timeSlot.startTime)}`;
       if (type === 'doctor' && timeSlot.establishment) {
-        return `Would you like to book an appointment ${timeText} at ${timeSlot.establishment.name}?`;
+        return t('bookAppointment.bookingConfirmationDoctor', {
+          time: timeText,
+          establishment: timeSlot.establishment.name
+        });
       } else if (type === 'establishment' && timeSlot.practician) {
-        return `Would you like to book an appointment ${timeText} with Dr. ${timeSlot.practician.user.firstName} ${timeSlot.practician.user.lastName}?`;
+        return t('bookAppointment.bookingConfirmationEstablishment', {
+          time: timeText,
+          firstName: timeSlot.practician.user.firstName,
+          lastName: timeSlot.practician.user.lastName
+        });
       }
-      return `Would you like to book an appointment ${timeText}?`;
+      return t('bookAppointment.bookingConfirmationGeneric', { time: timeText });
     };
 
     Alert.alert(
-      'Book Appointment',
+      t('bookAppointment.title'),
       getBookingMessage(),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Book',
+          text: t('bookAppointment.book'),
           onPress: async () => {
             try {
               setBookingLoading(true);
@@ -168,14 +177,14 @@ export default function BookAppointmentScreen() {
               };
               
               await apiService.createAppointment(appointmentRequest);
-              Alert.alert('Success', 'Appointment booked successfully!', [
+              Alert.alert(t('common.success'), t('bookAppointment.bookingSuccess'), [
                 {
-                  text: 'OK',
+                  text: t('common.ok'),
                   onPress: () => router.back(),
                 },
               ]);
             } catch (error) {
-              Alert.alert('Error', 'Failed to book appointment. Please try again.');
+              Alert.alert(t('common.error'), t('bookAppointment.bookingFailed'));
             } finally {
               setBookingLoading(false);
             }
@@ -225,7 +234,7 @@ export default function BookAppointmentScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Provider not found</Text>
+          <Text style={styles.errorText}>{t('bookAppointment.providerNotFound')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -238,7 +247,7 @@ export default function BookAppointmentScreen() {
           <ArrowLeft size={24} color="#111827" />
         </TouchableOpacity>
         <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>Book Appointment</Text>
+          <Text style={styles.headerTitle}>{t('bookAppointment.title')}</Text>
           <Text style={styles.headerSubtitle}>{getProviderName()}</Text>
         </View>
       </View>
@@ -293,12 +302,12 @@ export default function BookAppointmentScreen() {
                             </View>
                             {type === 'doctor' && slot.establishment && (
                               <Text style={styles.timeSlotProvider}>
-                                at {slot.establishment.name}
+                                {t('bookAppointment.at')} {slot.establishment.name}
                               </Text>
                             )}
                             {type === 'establishment' && slot.practician && (
                               <Text style={styles.timeSlotProvider}>
-                                with Dr. {slot.practician.user.firstName} {slot.practician.user.lastName}
+                                {t('bookAppointment.with')} Dr. {slot.practician.user.firstName} {slot.practician.user.lastName}
                               </Text>
                             )}
                           </View>
@@ -306,7 +315,7 @@ export default function BookAppointmentScreen() {
                       ))}
                   </View>
                 ) : (
-                  <Text style={styles.noSlotsText}>No available slots</Text>
+                  <Text style={styles.noSlotsText}>{t('bookAppointment.noAvailableSlots')}</Text>
                 )}
               </View>
             </View>
@@ -317,7 +326,7 @@ export default function BookAppointmentScreen() {
       {bookingLoading && (
         <View style={styles.bookingOverlay}>
           <ActivityIndicator size="large" color="#3B82F6" />
-          <Text style={styles.bookingText}>Booking appointment...</Text>
+          <Text style={styles.bookingText}>{t('bookAppointment.bookingAppointment')}</Text>
         </View>
       )}
     </SafeAreaView>
