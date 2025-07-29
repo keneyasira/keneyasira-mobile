@@ -571,6 +571,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
+  availability: {
     color: '#035AA6',
     fontSize: 14,
     fontWeight: '500',
