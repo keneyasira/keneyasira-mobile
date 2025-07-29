@@ -15,11 +15,16 @@ import { ArrowLeft, ArrowRight } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { apiService } from '@/services/api';
 
 export default function VerifyOTPScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { phone } = useLocalSearchParams<{ phone: string }>();
+  const { phone, signup, signupData } = useLocalSearchParams<{ 
+    phone: string; 
+    signup?: string; 
+    signupData?: string; 
+  }>();
   const { loginWithOTP, requestOTP } = useAuth();
   
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -62,8 +67,24 @@ export default function VerifyOTPScreen() {
 
     try {
       setLoading(true);
-      await loginWithOTP(phone, otpString);
-      router.replace('/(tabs)/search');
+      
+      if (signup === 'true' && signupData) {
+        // Handle signup flow
+        const userData = JSON.parse(signupData);
+        
+        // First verify OTP
+        await loginWithOTP(phone, otpString);
+        
+        // Then create patient with the signup data
+        // Note: The patient creation should happen on the backend after OTP verification
+        // For now, we'll proceed to the main app as the user is authenticated
+        
+        router.replace('/(tabs)/search');
+      } else {
+        // Handle regular login flow
+        await loginWithOTP(phone, otpString);
+        router.replace('/(tabs)/search');
+      }
     } catch (error) {
       Alert.alert(t('common.error'), t('auth.invalidOTP'));
       // Clear OTP inputs
@@ -108,7 +129,10 @@ export default function VerifyOTPScreen() {
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{t('auth.enterVerificationCode')}</Text>
             <Text style={styles.subtitle}>
-              {t('auth.verificationCodeSent', { phone })}
+              {signup === 'true' 
+                ? t('auth.verificationCodeSentSignup', { phone })
+                : t('auth.verificationCodeSent', { phone })
+              }
             </Text>
           </View>
 

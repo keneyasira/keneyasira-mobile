@@ -183,6 +183,18 @@ class ApiService {
     return response.data;
   }
 
+  // Create patient (for signup)
+  async createPatient(patientData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    birthDate: string;
+  }): Promise<Patient> {
+    const response: AxiosResponse<{data: Patient}> = await this.axios.post('/patients', patientData);
+    return response.data.data;
+  }
+
   // Specialties
   getSpecialties = async (): Promise<Specialty[]> => {
     const response: AxiosResponse<{data: Specialty[]}> = await this.axios.get('/specialties', {
