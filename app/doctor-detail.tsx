@@ -106,7 +106,7 @@ export default function DoctorDetailScreen() {
               firstName: doctor.user.firstName,
               lastName: doctor.user.lastName,
               specialties: doctor.specialties.map(s => t(`specialties.${s.name}`, s.name)).join(', ')
-            {doctor.specialties.map(s => t(`specialties.${s.name}`, s.name)).join(', ')}
+            })}
           </Text>
         </View>
       </ScrollView>
