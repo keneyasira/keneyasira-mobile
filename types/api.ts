@@ -46,6 +46,11 @@ export interface UserModel {
 
 export interface Practician {
   id: string;
+  userId: string;
+  specialties: {
+    id: string;
+    name: string;
+  }[];
   user: {
     createdBy?: null;
     email: string;
@@ -74,12 +79,27 @@ export interface Establishment {
   city: string;
   phone?: string;
   email?: string;
-  specialties: string[];
-  rating?: number;
+  specialties: {
+    id: string;
+    name: string;
+  }[];
   description?: string;
-  images?: string[];
-  createdAt: string;
-  updatedAt: string;
+  establishmentAffiliationId: string;
+  establishmentTypeId: string;
+  affiliation: {
+    id: string;
+    name: string;
+  };
+  type: {
+    id: string;
+    name: string;
+  }
+  createdBy?: string
+  updatedBy?: string
+  deletedBy?: string
+  createdAt?: string
+  deletedAt?: string
+  updatedAt?: string
 }
 
 export interface TimeSlot {
@@ -116,7 +136,6 @@ export interface AuthResponse {
 
 export interface LoginRequest {
   phone?: string; // phone
-  email?: string;
   clientType: 'patient',
 }
 
@@ -126,15 +145,6 @@ export interface VerifyOTPRequest {
   clientType: 'patient'
 }
 
-export interface MagicLinkRequest {
-  email: string;
-  clientType: 'patient'
-}
-
-export interface VerifyMagicLinkRequest {
-  token: string;
-  clientType: 'patient'
-}
 export interface SearchFilters {
   name_search?: string;
   location_search?: string;

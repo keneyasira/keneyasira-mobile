@@ -7,10 +7,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   loginWithOTP: (phone: string, otp: string) => Promise<void>;
-  loginWithMagicLink: (token: string) => Promise<void>;
   logout: () => Promise<void>;
   requestOTP: (phone: string) => Promise<void>;
-  requestMagicLink: (email: string) => Promise<void>;
   updatePatient: (data: Partial<Patient>) => Promise<void>;
 }
 
@@ -52,9 +50,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     await apiService.requestOTP(phone);
   };
 
-  const requestMagicLink = async (email: string) => {
-    await apiService.requestMagicLink(email);
-  };
 
   const loginWithOTP = async (phone: string, otp: string) => {
     try {
@@ -66,16 +61,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const loginWithMagicLink = async (token: string) => {
-    try {
-      const response: Patient = await apiService.verifyMagicLink(token);
-      console.log('response', response);
-      setPatient(response);
-    } catch (error) {
-      console.error('Login with OTP failed:', error);
-      throw error;
-    }
-  };
 
   const logout = async () => {
     try {
@@ -104,10 +89,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated: !!patient,
     isLoading,
     loginWithOTP,
-    loginWithMagicLink,
     logout,
     requestOTP,
-    requestMagicLink,
     updatePatient,
   };
 

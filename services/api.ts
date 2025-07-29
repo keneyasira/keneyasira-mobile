@@ -61,12 +61,6 @@ class ApiService {
     });
   }
 
-  async requestMagicLink(email: string): Promise<void> {
-    await this.axios.post('/authentication/login', { 
-      email: email,
-      clientType: 'patient' 
-    });
-  }
 
   async verifyOTP(phone: string, otp: string): Promise<Patient> {
     const response: AxiosResponse<AuthResponse> = await this.axios.post('/authentication/verify-otp', {
@@ -88,24 +82,6 @@ class ApiService {
     return patient.data.data;
   }
 
-  async verifyMagicLink(token: string): Promise<Patient> {
-    const response: AxiosResponse<AuthResponse> = await this.axios.post('/authentication/verify-magic-link', {
-      token,
-      clientType: 'patient'
-    });
-
-    
-    // Store token and patient data
-    await AsyncStorage.setItem('authToken', response.data.data.access_token);
-    // decode the token to get the patient id
-    const decodedToken = jwtDecode<UserModel>(response.data.data.access_token);
-    const patientId = decodedToken.infos.patient?.id;
-    // get the patient data
-    const patient = await this.axios.get(`/patients/${patientId}`);
-    await AsyncStorage.setItem('currentPatient', JSON.stringify(patient.data));
-
-    return patient.data.data;
-  }
 
   async logout(): Promise<void> {
     await AsyncStorage.removeItem('authToken');

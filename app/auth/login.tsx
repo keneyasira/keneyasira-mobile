@@ -11,36 +11,26 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Mail, Phone, ArrowRight } from 'lucide-react-native';
+import { Phone, ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 
-type LoginType = 'phone' | 'email';
 export default function LoginScreen() {
   const router = useRouter();
-  const { requestOTP, requestMagicLink } = useAuth();
-  const [loginType, setLoginType] = useState<LoginType>('phone');
-  const [identifier, setIdentifier] = useState('');
+  const { requestOTP } = useAuth();
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
 
   const validateInput = () => {
-    if (!identifier.trim()) {
-      Alert.alert('Error', `Please enter your ${loginType === 'phone' ? 'phone number' : 'email address'}`);
+    if (!phoneNumber.trim()) {
+      Alert.alert('Error', 'Please enter your phone number');
       return false;
     }
 
-    if (loginType === 'email') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(identifier)) {
-        Alert.alert('Error', 'Please enter a valid email address');
-        return false;
-      }
-    } else {
-      const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
-      if (!phoneRegex.test(identifier)) {
-        Alert.alert('Error', 'Please enter a valid phone number');
-        return false;
-      }
+    const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
+    if (!phoneRegex.test(phoneNumber)) {
+      Alert.alert('Error', 'Please enter a valid phone number');
+      return false;
     }
 
     return true;
@@ -53,20 +43,10 @@ export default function LoginScreen() {
 
     try {
       setLoading(true);
-      
-      if (loginType === 'phone') {
-        await requestOTP(identifier);
-        router.push(`/auth/verify-otp?phone=${encodeURIComponent(identifier)}`);
-      } else {
-        await requestMagicLink(identifier);
-        Alert.alert(
-          'Magic Link Sent',
-          'We\'ve sent a magic link to your email. Click the link to log in automatically.',
-          [{ text: 'OK' }]
-        );
-      }
+      await requestOTP(phoneNumber);
+      router.push(`/auth/verify-otp?phone=${encodeURIComponent(phoneNumber)}`);
     } catch (error) {
-      Alert.alert('Error', `Failed to send ${loginType === 'phone' ? 'OTP' : 'magic link'}. Please try again.`);
+      Alert.alert('Error', 'Failed to send OTP. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -82,68 +62,21 @@ export default function LoginScreen() {
           <View style={styles.header}>
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>
-              Choose your preferred login method
+              Enter your phone number to receive an OTP
             </Text>
-          </View>
-
-          <View style={styles.loginTypeContainer}>
-            <TouchableOpacity
-              style={[
-                styles.loginTypeButton,
-                loginType === 'phone' && styles.loginTypeButtonActive,
-              ]}
-              onPress={() => {
-                setLoginType('phone');
-                setIdentifier('');
-              }}
-            >
-              <Phone size={20} color={loginType === 'phone' ? '#FFFFFF' : '#6B7280'} />
-              <Text
-                style={[
-                  styles.loginTypeText,
-                  loginType === 'phone' && styles.loginTypeTextActive,
-                ]}
-              >
-                Phone Number
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.loginTypeButton,
-                loginType === 'email' && styles.loginTypeButtonActive,
-              ]}
-              onPress={() => {
-                setLoginType('email');
-                setIdentifier('');
-              }}
-            >
-              <Mail size={20} color={loginType === 'email' ? '#FFFFFF' : '#6B7280'} />
-              <Text
-                style={[
-                  styles.loginTypeText,
-                  loginType === 'email' && styles.loginTypeTextActive,
-                ]}
-              >
-                Email
-              </Text>
-            </TouchableOpacity>
           </View>
 
           <View style={styles.form}>
             <View style={styles.inputContainer}>
-              {loginType === 'phone' ? (
-                <Phone size={20} color="#6B7280" />
-              ) : (
-                <Mail size={20} color="#6B7280" />
-              )}
+              <Phone size={20} color="#6B7280" />
               <TextInput
                 style={styles.input}
-                placeholder={loginType === 'phone' ? 'Enter your phone number' : 'Enter your email'}
-                value={identifier}
-                onChangeText={setIdentifier}
-                keyboardType={loginType === 'phone' ? 'phone-pad' : 'email-address'}
+                placeholder="Enter your phone number"
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                keyboardType="phone-pad"
                 autoCapitalize="none"
-                autoComplete={loginType === 'phone' ? 'tel' : 'email'}
+                autoComplete="tel"
               />
             </View>
 
@@ -156,9 +89,7 @@ export default function LoginScreen() {
                 <ActivityIndicator size="small" color="#FFFFFF" />
               ) : (
                 <>
-                  <Text style={styles.buttonText}>
-                    {loginType === 'phone' ? 'Send OTP' : 'Send Magic Link'}
-                  </Text>
+                  <Text style={styles.buttonText}>Send OTP</Text>
                   <ArrowRight size={20} color="#FFFFFF" />
                 </>
               )}
@@ -167,10 +98,7 @@ export default function LoginScreen() {
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>
-              {loginType === 'phone' 
-                ? 'You will receive an OTP via SMS to verify your phone number'
-                : 'You will receive a magic link via email to log in automatically'
-              }
+              You will receive an OTP via SMS to verify your phone number
             </Text>
             <Text style={styles.footerSubtext}>
               By continuing, you agree to our Terms of Service and Privacy Policy
@@ -210,34 +138,6 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     textAlign: 'center',
     lineHeight: 24,
-  },
-  loginTypeContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 16,
-    padding: 4,
-    marginBottom: 24,
-  },
-  loginTypeButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-  },
-  loginTypeButtonActive: {
-    backgroundColor: '#3B82F6',
-  },
-  loginTypeText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6B7280',
-    marginLeft: 8,
-  },
-  loginTypeTextActive: {
-    color: '#FFFFFF',
   },
   form: {
     marginBottom: 40,

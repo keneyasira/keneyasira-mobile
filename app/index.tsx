@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function SplashScreen() {
   const router = useRouter();
   const segments = useSegments();
-  const { patient, isLoading, loginWithMagicLink } = useAuth();
+  const { patient, isLoading } = useAuth();
 
   // Navigation effect to handle auth state changes
   useEffect(() => {
@@ -24,39 +24,6 @@ export default function SplashScreen() {
       router.replace('/auth/login');
     }
   }, [patient, isLoading, segments]);
-  useEffect(() => {
-    // Handle magic link deep linking
-    const handleDeepLink = async (url: string) => {
-      try {
-        const urlObj = new URL(url);
-        const token = urlObj.searchParams.get('token');
-        
-        if (token && urlObj.pathname.includes('/auth/magic-link')) {
-          await loginWithMagicLink(token);
-          router.replace('/(tabs)/search');
-          return;
-        }
-      } catch (error) {
-        console.error('Error handling deep link:', error);
-      }
-    };
-
-    // Check for initial URL (app opened via link)
-    Linking.getInitialURL().then((url) => {
-      if (url) {
-        handleDeepLink(url);
-      }
-    });
-
-    // Listen for incoming links (app already open)
-    const subscription = Linking.addEventListener('url', ({ url }) => {
-      handleDeepLink(url);
-    });
-
-    return () => {
-      subscription?.remove();
-    };
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
