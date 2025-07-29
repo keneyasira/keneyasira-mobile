@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   doctorName: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#111827',
+    color: '#035AA6',
     marginBottom: 8,
   },
   specialty: {

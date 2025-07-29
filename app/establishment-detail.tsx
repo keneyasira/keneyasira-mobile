@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   establishmentName: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#111827',
+    color: '#035AA6',
     marginBottom: 8,
     textAlign: 'center',
   },
