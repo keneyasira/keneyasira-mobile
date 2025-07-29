@@ -45,8 +45,8 @@ export default function EstablishmentDetailScreen() {
   const loadEstablishmentDetails = async () => {
     try {
       setLoading(true);
-      const data = await apiService.getEstablishmentById(id);
-      setEstablishment(data);
+      const response = await apiService.getEstablishmentById(id);
+      setEstablishment(response.data);
     } catch (error) {
       Alert.alert('Error', 'Failed to load establishment details');
       router.back();
@@ -60,8 +60,8 @@ export default function EstablishmentDetailScreen() {
 
     try {
       setPracticiansLoading(true);
-      const data = await apiService.getEstablishmentPracticians(establishment.id);
-      setPracticians(data);
+      const response = await apiService.getEstablishmentPracticians(establishment.id);
+      setPracticians(response.data);
     } catch (error) {
       console.error('Failed to load practicians:', error);
       setPracticians([]);
@@ -75,8 +75,8 @@ export default function EstablishmentDetailScreen() {
 
     try {
       setTimeSlotsLoading(true);
-      const data = await apiService.getEstablishmentTimeSlots(establishment.id, selectedDate);
-      setTimeSlots(data);
+      const response = await apiService.getEstablishmentTimeSlots(establishment.id, selectedDate);
+      setTimeSlots(response.data);
     } catch (error) {
       console.error('Failed to load time slots:', error);
       setTimeSlots([]);
