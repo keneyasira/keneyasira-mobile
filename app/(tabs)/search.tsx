@@ -183,7 +183,14 @@ export default function SearchScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>KENEYA SIRA</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>
+            <Text style={styles.titleBlue}>KENEYA </Text>
+            <Text style={styles.titleBlue}>
+              <Text style={styles.titleLightBlue}>S</Text>IRA
+            </Text>
+          </Text>
+        </View>
         
         <View style={styles.searchContainer}>
           <Search size={20} color="#9CA3AF" style={styles.searchIcon} />
@@ -314,9 +321,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#111827',
     marginBottom: 20,
-    textAlign: 'center',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 0,
+  },
+  titleBlue: {
+    color: '#3B82F6',
+  },
+  titleLightBlue: {
+    color: '#93C5FD',
   },
   searchContainer: {
     flexDirection: 'row',
