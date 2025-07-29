@@ -113,7 +113,7 @@ export interface TimeSlot {
   id: string;
   startTime: string;
   endTime: string;
-  isAvailable: boolean;
+  available: boolean;
   date: string;
   practicianId?: string;
   establishmentId?: string;
