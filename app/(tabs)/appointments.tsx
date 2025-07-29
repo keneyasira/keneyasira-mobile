@@ -32,7 +32,7 @@ export default function AppointmentsScreen() {
     try {
       setLoading(true);
       const data = await apiService.getPatientAppointments(patient.id);
-      console.log('Appointments data:', data);
+
       setAppointments(data || []);
     } catch (error) {
       console.error('Failed to load appointments:', error);
