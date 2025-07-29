@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search, MapPin, Star, Building2, ChevronDown, X, Clock } from 'lucide-react-native';
@@ -37,6 +38,7 @@ export default function SearchScreen() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [specialtiesLoading, setSpecialtiesLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     loadSpecialties();
@@ -127,6 +129,20 @@ export default function SearchScreen() {
       Alert.alert('Error', 'Failed to search. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await loadSpecialties();
+      if (searchQuery.length >= 2 || selectedSpecialty) {
+        await performSearch();
+      }
+    } catch (error) {
+      console.error('Failed to refresh:', error);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -348,6 +364,14 @@ export default function SearchScreen() {
             keyExtractor={(item, index) => `${item.type}-${(item.data as any).id}-${index}`}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={['#3B82F6']}
+                tintColor="#3B82F6"
+              />
+            }
             ListEmptyComponent={
               searchQuery.length >= 2 || selectedSpecialty ? (
                 <View style={styles.emptyContainer}>

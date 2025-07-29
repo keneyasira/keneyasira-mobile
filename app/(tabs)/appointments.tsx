@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar, Clock, MapPin, User } from 'lucide-react-native';
@@ -21,6 +22,7 @@ export default function AppointmentsScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('upcoming');
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     loadAppointments();
@@ -39,6 +41,17 @@ export default function AppointmentsScreen() {
       Alert.alert('Error', 'Failed to load appointments');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await loadAppointments();
+    } catch (error) {
+      console.error('Failed to refresh appointments:', error);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -252,6 +265,14 @@ export default function AppointmentsScreen() {
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={['#3B82F6']}
+              tintColor="#3B82F6"
+            />
+          }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Calendar size={64} color="#D1D5DB" />
