@@ -117,6 +117,8 @@ export interface TimeSlot {
   date: string;
   practicianId?: string;
   establishmentId?: string;
+  establishment: Establishment;
+  practician: Practician;
 }
 
 export interface Appointment {
@@ -128,12 +130,22 @@ export interface Appointment {
   date: string;
   startTime: string;
   endTime: string;
-  status: 'scheduled' | 'completed' | 'cancelled' | 'no-show';
-  notes?: string;
+  appointmentStatus: {
+    id: string;
+    name: 'scheduled' | 'completed' | 'cancelled' | 'confirmed'| 'no-show';
+  };
+  appointmentStatusId: string;
   practician?: Practician;
   establishment?: Establishment;
-  createdAt: string;
-  updatedAt: string;
+  patient: Patient;
+  timeSlot: TimeSlot;
+  
+  createdBy?: string
+  updatedBy?: string
+  deletedBy?: string
+  createdAt?: string
+  deletedAt?: string
+  updatedAt?: string
 }
 
 export interface AuthResponse {
