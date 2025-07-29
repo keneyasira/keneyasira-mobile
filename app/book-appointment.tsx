@@ -176,6 +176,10 @@ export default function BookAppointmentScreen() {
   };
 
   const navigateWeek = (direction: 'prev' | 'next') => {
+    if (direction === 'prev' && weekOffset <= 0) {
+      // Don't allow going back beyond the current week
+      return;
+    }
     setWeekOffset(prev => direction === 'prev' ? prev - 1 : prev + 1);
   };
 
@@ -231,10 +235,11 @@ export default function BookAppointmentScreen() {
 
       <View style={styles.weekNavigation}>
         <TouchableOpacity
-          style={styles.weekNavButton}
+          style={[styles.weekNavButton, weekOffset <= 0 && styles.weekNavButtonDisabled]}
           onPress={() => navigateWeek('prev')}
+          disabled={weekOffset <= 0}
         >
-          <ChevronLeft size={20} color="#3B82F6" />
+          <ChevronLeft size={20} color={weekOffset <= 0 ? "#9CA3AF" : "#3B82F6"} />
         </TouchableOpacity>
         <Text style={styles.weekRange}>{formatWeekRange()}</Text>
         <TouchableOpacity
@@ -269,10 +274,24 @@ export default function BookAppointmentScreen() {
                           style={styles.timeSlot}
                           onPress={() => handleBookAppointment(slot)}
                         >
-                          <Clock size={14} color="#3B82F6" />
-                          <Text style={styles.timeSlotText}>
-                            {formatTime(slot.startTime)}
-                          </Text>
+                          <View style={styles.timeSlotContent}>
+                            <View style={styles.timeSlotHeader}>
+                              <Clock size={14} color="#3B82F6" />
+                              <Text style={styles.timeSlotText}>
+                                {formatTime(slot.startTime)}
+                              </Text>
+                            </View>
+                            {type === 'doctor' && slot.establishment && (
+                              <Text style={styles.timeSlotProvider}>
+                                at {slot.establishment.name}
+                              </Text>
+                            )}
+                            {type === 'establishment' && slot.practician && (
+                              <Text style={styles.timeSlotProvider}>
+                                with Dr. {slot.practician.user.firstName} {slot.practician.user.lastName}
+                              </Text>
+                            )}
+                          </View>
                         </TouchableOpacity>
                       ))}
                   </View>
@@ -341,6 +360,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#F3F4F6',
   },
+  weekNavButtonDisabled: {
+    opacity: 0.5,
+  },
   weekRange: {
     fontSize: 16,
     fontWeight: '600',
@@ -399,8 +421,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   timeSlot: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: '#EBF8FF',
     borderWidth: 1,
     borderColor: '#3B82F6',
@@ -408,12 +428,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginBottom: 8,
+    minWidth: '45%',
+    maxWidth: '48%',
+  },
+  timeSlotContent: {
+    flex: 1,
+  },
+  timeSlotHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
   },
   timeSlotText: {
     fontSize: 14,
     color: '#3B82F6',
     marginLeft: 6,
     fontWeight: '500',
+  },
+  timeSlotProvider: {
+    fontSize: 12,
+    color: '#6B7280',
+    fontStyle: 'italic',
   },
   noSlotsText: {
     fontSize: 14,
