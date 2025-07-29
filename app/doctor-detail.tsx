@@ -118,6 +118,9 @@ export default function DoctorDetailScreen() {
         <Calendar size={20} color="#FFFFFF" />
         <Text style={styles.bookAppointmentButtonText}>{t('doctorDetail.bookAppointment')}</Text>
       </TouchableOpacity>
+    }
+    )
+    }
     </SafeAreaView>
   );
 }
