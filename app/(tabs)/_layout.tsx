@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Search, Calendar, User, History } from 'lucide-react-native';
+import { Search, Calendar, User } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -40,15 +40,6 @@ export default function TabLayout() {
           title: 'Appointments',
           tabBarIcon: ({ size, color }) => (
             <Calendar size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="history"
-        options={{
-          title: 'History',
-          tabBarIcon: ({ size, color }) => (
-            <History size={size} color={color} />
           ),
         }}
       />
