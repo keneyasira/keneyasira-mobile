@@ -17,13 +17,14 @@ export default function SplashScreen() {
 
     const inAuthGroup = segments[0] === 'auth';
     const inTabsGroup = segments[0] === '(tabs)';
+    const onLanding = segments[0] === 'landing';
 
     if (patient && !inTabsGroup) {
       // User is authenticated but not in tabs, redirect to tabs
       router.replace('/(tabs)/search');
-    } else if (!patient && !inAuthGroup) {
-      // User is not authenticated and not in auth, redirect to login
-      router.replace('/auth/login');
+    } else if (!patient && !inAuthGroup && !onLanding) {
+      // User is not authenticated and not in auth or landing, redirect to landing
+      router.replace('/landing');
     }
   }, [patient, isLoading, segments]);
 

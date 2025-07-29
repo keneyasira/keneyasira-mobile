@@ -166,6 +166,17 @@
     "title": "HealthCare",
     "subtitle": "Your Health, Our Priority"
   },
+  "landing": {
+    "welcomeTitle": "Welcome to Keneya Sira",
+    "welcomeSubtitle": "Your health, our priority",
+    "heroText": "Connect with qualified healthcare professionals and book appointments easily",
+    "bookAppointment": "Book an Appointment",
+    "logIn": "Log In",
+    "doctorPortalText": "Are you a healthcare professional?",
+    "visitDoctorPortal": "Visit keneyasira.com",
+    "cannotOpenLink": "Cannot open the link. Please try again later.",
+    "footerText": "Quality healthcare made accessible for everyone"
+  },
   "settings": {
     "language": "Language",
     "selectLanguage": "Select Language",

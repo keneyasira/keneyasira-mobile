@@ -166,6 +166,17 @@
     "title": "Keneya Sira",
     "subtitle": "Votre Santé, Notre Priorité"
   },
+  "landing": {
+    "welcomeTitle": "Bienvenue sur Keneya Sira",
+    "welcomeSubtitle": "Votre santé, notre priorité",
+    "heroText": "Connectez-vous avec des professionnels de santé qualifiés et prenez rendez-vous facilement",
+    "bookAppointment": "Prendre Rendez-vous",
+    "logIn": "Se Connecter",
+    "doctorPortalText": "Êtes-vous un professionnel de santé ?",
+    "visitDoctorPortal": "Visitez keneyasira.com",
+    "cannotOpenLink": "Impossible d'ouvrir le lien. Veuillez réessayer plus tard.",
+    "footerText": "Des soins de santé de qualité rendus accessibles à tous"
+  },
   "settings": {
     "language": "Langue",
     "selectLanguage": "Sélectionner la Langue",
