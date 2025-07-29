@@ -161,38 +161,10 @@ export default function AppointmentsScreen() {
         )}
       </View>
 
-      {activeTab === 'upcoming' && (appointment.appointmentStatus.name === 'scheduled' || appointment.appointmentStatus.name === 'confirmed') && (
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={() => handleCancelAppointment(appointment.id)}
-        >
-          <Text style={styles.cancelButtonText}>{t('appointments.cancelAppointment')}</Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 
   const handleCancelAppointment = async (appointmentId: string) => {
-    Alert.alert(
-      t('appointments.cancelAppointment'),
-      t('appointments.cancelConfirmation'),
-      [
-        { text: t('common.no'), style: 'cancel' },
-        {
-          text: t('common.yes'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await apiService.cancelAppointment(appointmentId);
-              await loadAppointments();
-              Alert.alert(t('common.success'), t('appointments.cancelSuccess'));
-            } catch (error) {
-              Alert.alert(t('common.error'), t('appointments.cancelFailed'));
-            }
-          },
-        },
-      ]
-    );
   };
 
   const filteredAppointments = getFilteredAppointments();
@@ -425,19 +397,6 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     fontStyle: 'italic',
     marginBottom: 12,
-  },
-  cancelButton: {
-    backgroundColor: '#FEF2F2',
-    borderWidth: 1,
-    borderColor: '#FECACA',
-    borderRadius: 8,
-    paddingVertical: 8,
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#EF4444',
   },
   emptyContainer: {
     alignItems: 'center',

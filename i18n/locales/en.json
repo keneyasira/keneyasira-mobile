@@ -65,10 +65,6 @@
     "noPastAppointments": "No past appointments",
     "bookFirstAppointment": "Book your first appointment to get started",
     "historyWillAppear": "Your appointment history will appear here",
-    "cancelAppointment": "Cancel Appointment",
-    "cancelConfirmation": "Are you sure you want to cancel this appointment?",
-    "cancelSuccess": "Appointment cancelled successfully",
-    "cancelFailed": "Failed to cancel appointment",
     "loadFailed": "Failed to load appointments",
     "refreshFailed": "Failed to refresh appointments",
     "statuses": {

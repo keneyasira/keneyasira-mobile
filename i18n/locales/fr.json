@@ -65,10 +65,6 @@
     "noPastAppointments": "Aucun rendez-vous passé",
     "bookFirstAppointment": "Réservez votre premier rendez-vous pour commencer",
     "historyWillAppear": "Votre historique de rendez-vous apparaîtra ici",
-    "cancelAppointment": "Annuler le Rendez-vous",
-    "cancelConfirmation": "Êtes-vous sûr de vouloir annuler ce rendez-vous ?",
-    "cancelSuccess": "Rendez-vous annulé avec succès",
-    "cancelFailed": "Échec de l'annulation du rendez-vous",
     "loadFailed": "Échec du chargement des rendez-vous",
     "refreshFailed": "Échec de l'actualisation des rendez-vous",
     "statuses": {
