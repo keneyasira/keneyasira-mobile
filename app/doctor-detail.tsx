@@ -219,14 +219,6 @@ export default function DoctorDetailScreen() {
             excellent patient care and treatment.
           </Text>
         </View>
-
-        <TouchableOpacity
-          style={styles.bookAppointmentButton}
-          onPress={() => router.push(`/book-appointment?type=doctor&id=${doctor.id}`)}
-        >
-          <Calendar size={20} color="#FFFFFF" />
-          <Text style={styles.bookAppointmentButtonText}>Book Appointment</Text>
-        </TouchableOpacity>
       </ScrollView>
       
       {bookingLoading && (
@@ -235,6 +227,14 @@ export default function DoctorDetailScreen() {
           <Text style={styles.bookingText}>Booking appointment...</Text>
         </View>
       )}
+
+      <TouchableOpacity
+        style={styles.bookAppointmentButton}
+        onPress={() => router.push(`/book-appointment?type=doctor&id=${doctor.id}`)}
+      >
+        <Calendar size={20} color="#FFFFFF" />
+        <Text style={styles.bookAppointmentButtonText}>Book Appointment</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -412,21 +412,6 @@ const styles = StyleSheet.create({
     color: '#374151',
     lineHeight: 24,
   },
-  bookAppointmentButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#3B82F6',
-    borderRadius: 16,
-    paddingVertical: 16,
-    marginBottom: 16,
-  },
-  bookAppointmentButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    marginLeft: 8,
-  },
   bookingOverlay: {
     position: 'absolute',
     top: 0,
@@ -441,5 +426,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     marginTop: 12,
+  },
+  bookAppointmentButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#3B82F6',
+    marginHorizontal: 20,
+    marginBottom: 20,
+    paddingVertical: 16,
+    borderRadius: 12,
+  },
+  bookAppointmentButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginLeft: 8,
   },
 });
