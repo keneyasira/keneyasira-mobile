@@ -47,7 +47,6 @@ export default function LandingScreen() {
 
         {/* Welcome Section */}
         <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeTitle}>{t('landing.welcomeTitle')}</Text>
           <Text style={styles.welcomeSubtitle}>{t('landing.welcomeSubtitle')}</Text>
         </View>
 
