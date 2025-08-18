@@ -17,7 +17,7 @@ import {
   Alert,
 } from 'react-native';
 
-const API_BASE_URL = 'http://192.168.1.98:4000'; // Replace with actual API URL
+const API_BASE_URL = 'http://154.118.139.6:4000'; // Replace with actual API URL
 
 class ApiService {
   private axios;
